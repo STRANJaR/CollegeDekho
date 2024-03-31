@@ -133,18 +133,18 @@ def upload_faculty_profile_data(request):
 @api_view(['GET'])
 @csrf_exempt
 def get_faculty_profile_data(request, pk):
-    if request.user.is_authenticated:
-        try:
-            # user_id = request.user.id
-            faculty_profile = Faculty_Profile.objects.get(id=pk)
-            serializer = FacultyProfileSerializer(faculty_profile)
-            return Response(serializer.data)
-        
-        except Faculty_Profile.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # if request.user.is_authenticated:
+    try:
+        # user_id = request.user.id
+        faculty_profile = Faculty_Profile.objects.get(id=pk)
+        serializer = FacultyProfileSerializer(faculty_profile)
+        return Response(serializer.data)
+    
+    except Faculty_Profile.DoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    else:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    # else:
+        # return Response(status=status.HTTP_401_UNAUTHORIZED)
     
 
 

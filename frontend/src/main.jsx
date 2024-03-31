@@ -8,6 +8,7 @@ import Home from './components/Home.jsx'
 import Colleges from './components/Colleges.jsx'
 import JoinCollege from './components/JoinCollege.jsx'
 import Profile from './components/Profile.jsx'
+import Signup from './components/Signup.jsx'
 
 
 const router = createBrowserRouter([
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile/>
+      },
+      {
+        path: "/signup",
+        element: <Signup/>
       }
     ]
   }
