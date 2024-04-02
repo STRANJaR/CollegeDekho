@@ -11,6 +11,7 @@ import Profile from './components/Profile.jsx'
 import Signup from './components/Signup.jsx'
 import FacultySignup from './components/Faculty/FacultySignup.jsx'
 import CollegeSignup from './components/College/CollegeSignup.jsx'
+import StudentSignup from './components/Student/StudentSignup.jsx'
 
 
 const router = createBrowserRouter([
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "/college-register",
         element: <CollegeSignup/>
+      },
+      {
+        path: "student-register",
+        element: <StudentSignup/>
       },
     ]
   }
