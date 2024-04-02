@@ -1,31 +1,31 @@
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react'
 
+function StudentSignup() {
 
-function FacultySignup() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  
-  console.log(username, email, password)
-  const handleSubmit = (e)=>{
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    console.log(username, email, password)
+    const handleSubmit = (e)=>{
     try {
-      e.preventDefault();
+        e.preventDefault();
 
-      const userData = {
+        const userData = {
         username,
         email,
         password
-      }
-      axios.post(`http://127.0.0.1:8000/faculty_signup/`, userData)
-      .then((response)=>{
+        }
+        axios.post(`http://127.0.0.1:8000/college_signup/`, userData)
+        .then((response)=>{
         console.log(response);
-      })
+        })
     } catch (error) {
-      console.log("Something went wrong while signup faculty", error);
+        console.log("Something went wrong while register college", error);
     }
-  }
+    }
+
+    
   return (
     <section className="h-screen w-full bg-bodyPrimary">
 
@@ -34,7 +34,7 @@ function FacultySignup() {
       {/* Left side image  */}
       <div className="w-full bg-teal-600 text-center">
         {/* <img src={""} width="400"  alt="" /> */}
-        <h1 className="relative top-64 font-semibold text-whiteText text-3xl">Faculty Register</h1>
+        <h1 className="relative top-64 font-semibold text-whiteText text-3xl">College Register</h1>
 
       </div>
 
@@ -120,4 +120,4 @@ function FacultySignup() {
   )
 }
 
-export default FacultySignup
+export default StudentSignup

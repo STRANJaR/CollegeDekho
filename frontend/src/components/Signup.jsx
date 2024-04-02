@@ -20,13 +20,16 @@ function Signup() {
 
             Register as College
             </Link>
-            
+
             <Link
+            to={'/faculty-register'}
             className='bg-green-200 w-96 text-center p-4 rounded-md my-3'
             >
             Register as Faculty
             </Link>
+            
             <Link
+            to={'/student-register'}
             className='bg-green-200 w-96 text-center p-4 rounded-md my-3'
             >
             Register as Student
