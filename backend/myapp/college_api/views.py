@@ -22,7 +22,7 @@ def college_signup(request):
     serializer = CollegeSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
-        return Response({"message":"Your signup is done successfuly", "serialized data":serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({"message":"Your signup is done successfuly", "data":serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

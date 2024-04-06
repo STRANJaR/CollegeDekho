@@ -1,37 +1,30 @@
-import React from 'react'
 import axios from 'axios';
-import { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom';
 
-function CollegeSignup() {
-
+function CollegeLogin() {
     const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-  
-    console.log(username, email, password)
-    const handleSubmit = (e)=>{
-    try {
+
+    const handleLogin = (e) => {
         e.preventDefault();
 
-        const userData = {
-        username,
-        email,
-        password
+        try {
+            const userData = {
+                username,
+                password
+            }
+            axios.post(`http://127.0.0.1:8000/college_login/`, userData, {
+              headers: {
+                "Authorization": "Bearer " + password,
+                "Content-Type": "application/json"
+              }
+            })
+            .then((response)=> console.log(response))
+        } catch (error) {
+            console.log(error);
         }
-        axios.post(`http://127.0.0.1:8000/college_signup/`, userData, {
-          headers: {
-            "Content-Type": 'application/json'
-          }
-        })
-        .then((response)=>{
-        console.log(response);
-        <Navigate to={"/college-root"} />
-        })
-    } catch (error) {
-        console.log("Something went wrong while register college", error);
     }
-  }
   return (
     <section className="h-screen w-full bg-bodyPrimary">
 
@@ -49,7 +42,7 @@ function CollegeSignup() {
 
         <h1 className="text-3xl py-5 p">Register</h1>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin}>
           <div className="flex flex-col"> 
 
 
@@ -67,22 +60,6 @@ function CollegeSignup() {
               defaultValue={username} 
               onChange={(e)=> setUsername(e.target.value)} 
               required={true}/>
-
-            <label 
-            htmlFor="email"
-            className="text-xs py-2"
-            >
-              Email: 
-            </label>
-
-              <input 
-              className="p-3 outline-none border w-96"
-              placeholder="Enter Your Email..."
-              type="email" 
-              name="email" 
-              defaultValue={email} 
-              onChange={(e)=> setEmail(e.target.value)} 
-              required={true} />
 
             
 
@@ -105,7 +82,7 @@ function CollegeSignup() {
             <button 
             className="bg-primaryColor text-whiteText rounded-sm p-3 w-96 mt-4"
             type="submit"
-            >Register
+            >Login
             </button>
 
             <p className="pt-5">Already registerd?
@@ -126,4 +103,4 @@ function CollegeSignup() {
   )
 }
 
-export default CollegeSignup
+export default CollegeLogin
