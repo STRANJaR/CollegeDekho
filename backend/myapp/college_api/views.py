@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from myapp.pagination import CustomPagination
 from django.contrib.auth.hashers import make_password
+from cloudinary.uploader import upload
 
 
 # Creating signup api for college using api_view decorator
@@ -21,7 +22,7 @@ def college_signup(request):
     serializer = CollegeSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"message":"Your signup is done successfuly", "serialized data":serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -52,8 +53,43 @@ def create_college_profile(request):
     # if request.user.is_authenticated:
     serializer = CollegeProfileSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        item = serializer.save()
+        
+        # college image
+        image = request.POST.get('images', False)
+        
+        # college logo 
+        logo = request.POST.get('image', False)
+        
+        try:
+            if image:
+                # uploading college image to cloudinary
+                upload_image = upload(image)
+                
+                # fetching url of college image from cloudinary response
+                item.images = upload_image.get('secure_url')
+                
+        except College_Profile.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            if logo:
+                # uploading college image to cloudinary
+                upload_logo = upload(logo)
+                
+                # fetching url of college image from cloudinary response and store it in database
+                item.logo = upload_logo.get('secure_url')
+                
+        except College_Profile.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        # saving serializer.data to database
+        item.save()
+        
+        return Response({"message":"Your signup is done successfuly", "serialized data":serializer.data}, status=status.HTTP_201_CREATED)
+        
+        
+        
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # else:

@@ -1,5 +1,5 @@
 from django.db import models
-
+from cloudinary.models import CloudinaryField
 
 
 # model for college
@@ -29,7 +29,10 @@ class Faculty_Profile(models.Model):
     name = models.CharField(max_length=100)
     skills = models.TextField(max_length=1500)
     experience = models.TextField(max_length=1500)
-    picture = models.ImageField(upload_to='profile_pictures/')
+    avtar = models.ImageField(upload_to='profile_pictures/', default="profile pic not found")
+    qualification = models.TextField(max_length=2000, default="")
+    about = models.TextField(max_length=2000, default="")
+    
     # username = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     
     
@@ -38,13 +41,25 @@ class College_Profile(models.Model):
     college_id = models.AutoField
     college_name = models.CharField(max_length=100)
     logo = models.ImageField(upload_to='logo_images/', default="Image not found")
-    college_image = models.ImageField(upload_to='college_images/', default="Image not found")
+    images = models.ImageField(upload_to='college_images/', default="Image not found")
     description = models.TextField(max_length=1500)
     location = models.TextField(max_length=1000)
     established_date = models.DateField()
     website = models.URLField()
     student_population = models.PositiveIntegerField()
     faculty_population = models.PositiveIntegerField()
+    affiliated_by = models.TextField(max_length=500, null=False)
+    
+    # giving choices
+    my_choices = [
+        ('IT', 'IT'),
+        ('Non-IT', 'Non-IT'),
+        ("Both", 'Both'),
+        ('Others','Others')
+    ]
+    college_type = models.CharField(max_length=50, choices=my_choices, default="")
+    college_code = models.CharField(max_length=50, null=False)
+    
     
 
 

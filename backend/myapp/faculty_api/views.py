@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from myapp.pagination import CustomPagination
 from django.contrib.auth.hashers import make_password
+from cloudinary.uploader import upload
 
 
 
@@ -22,7 +23,7 @@ def faculty_signup(request):
     serializer = FacultySerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"message":"Your signup is done successfull", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -52,8 +53,29 @@ def create_faculty_profile(request):
     # if request.user.is_authenticated:
     serializer = FacultyProfileSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        item = serializer.save()
+        
+        # faculty profile picture
+        profile_pic = request.POST.get('avtar', False)
+        
+        try:
+            if profile_pic:
+                # uploading facuty profile to cloudinary
+                upload_image = upload(profile_pic)
+                
+                # fetching url of college image from cloudinary response
+                item.avtar = upload_image.get('url')
+                
+        except Faculty_Profile.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        item.save()
+        
+        # message = "Your profile is created successfuly..."
+        
+        return Response({"message":"successfull", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
+    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # else:

@@ -24,7 +24,7 @@ class StudentModelAdmin(admin.ModelAdmin):
 # admin for faculty_profile
 @admin.register(Faculty_Profile)
 class FacultyProfileModelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'skills', 'experience', 'picture']
+    list_display = ['id', 'name', 'skills', 'experience', 'avtar', 'qualification', 'about']
     
     
 # admin for subject_teacher
@@ -36,5 +36,5 @@ class SubjectTeacherModelAdmin(admin.ModelAdmin):
 # admin for college_profile 
 @admin.register(College_Profile)
 class CollegeProfileModelAdmin(admin.ModelAdmin):
-    list_display = ['college_id', 'college_name', 'logo', 'college_image', 'description', 'location', 'established_date', 'website', 'student_population', 'faculty_population']
+    list_display = ['college_id', 'college_name', 'logo', 'images', 'description', 'location', 'established_date', 'website', 'student_population', 'faculty_population', 'affiliated_by', 'college_type', 'college_code']
     

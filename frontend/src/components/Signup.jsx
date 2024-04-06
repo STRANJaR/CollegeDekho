@@ -7,7 +7,7 @@ function Signup() {
 
     
   return (
-    <section className='bg-red-200 h-screen w-full'>
+    <section className='bg-red-900 h-screen w-full'>
       <div className='bg-red-300 h-auto'>
         <div className=''>
           <div className='flex flex-col'>

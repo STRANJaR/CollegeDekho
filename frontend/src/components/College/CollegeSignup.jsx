@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 
 function CollegeSignup() {
 
@@ -22,6 +22,7 @@ function CollegeSignup() {
         axios.post(`http://127.0.0.1:8000/college_signup/`, userData)
         .then((response)=>{
         console.log(response);
+        <Navigate to={"/college-root"} />
         })
     } catch (error) {
         console.log("Something went wrong while register college", error);

@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import cloudinary_storage
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,9 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
     'myapp',
     'rest_framework.authtoken',
     'corsheaders',
+    'cloudinary',
+    
 ]
 
 MIDDLEWARE = [
@@ -82,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'college_dekho',
         'USER': 'parishram',
-        'PASSWORD': 'yadav08',
+        'PASSWORD': 'parishramrai08',
         'HOST':'localhost',
         'PORT':'3306',
     }
@@ -134,3 +139,13 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
        'http://localhost:5173',
 )
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dxb3wwjl9',
+    'API_KEY': '236348386764318',
+    'API_SECRET': 'xHM61QL9XbCaiasOofzEQUt8a5Q',
+}
+
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
