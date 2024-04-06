@@ -8,13 +8,12 @@ function Signup() {
     
   return (
     <section className='bg-red-900 h-screen w-full'>
-      <div className='bg-red-300 h-auto'>
-        <div className=''>
-          <div className='flex flex-col'>
+      <div className='bg-white h-screen'>
+          <div className='flex flex-col ml-96 mr-96 relative top-28 '>
 
             <Link
             to={'/college-register'}
-            className='bg-green-200 w-96 text-center p-4 rounded-md my-3'
+            className='bg-blue-700  text-white hover:bg-blue-800 shadow-md transition-all  text-center p-4 rounded-sm my-3'
             >
               {/* <FaUniversity /> */}
 
@@ -23,21 +22,21 @@ function Signup() {
 
             <Link
             to={'/faculty-register'}
-            className='bg-green-200 w-96 text-center p-4 rounded-md my-3'
+            className='bg-blue-700  text-white hover:bg-blue-800 shadow-md transition-all  text-center p-4 rounded-sm my-3'
             >
             Register as Faculty
             </Link>
             
             <Link
             to={'/student-register'}
-            className='bg-green-200 w-96 text-center p-4 rounded-md my-3'
+            className='bg-blue-700  text-white hover:bg-blue-800 shadow-md transition-all  text-center p-4 rounded-sm my-3'
             >
             Register as Student
             </Link>
 
             
           </div>
-        </div>
+        
       </div>
     </section>
   )
