@@ -2,24 +2,20 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 
-function CollegeLogin() {
+function FacultyLogin() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    console.log(username, password);
     const handleLogin = (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
         try {
             const userData = {
                 username,
                 password
             }
-            axios.post(`http://127.0.0.1:8000/college_login/`, userData, {
-              headers: {
-                "Authorization": "Bearer " + password,
-                "Content-Type": "application/json"
-              }
-            })
+            axios.post(`http://127.0.0.1:8000/faculty_login/`, userData)
             .then((response)=> console.log(response))
         } catch (error) {
             console.log(error);
@@ -33,7 +29,7 @@ function CollegeLogin() {
       {/* Left side image  */}
       <div className="w-full bg-teal-600 text-center">
         {/* <img src={""} width="400"  alt="" /> */}
-        <h1 className="relative top-64 font-semibold text-whiteText text-3xl">College Login</h1>
+        <h1 className="relative top-64 font-semibold text-whiteText text-3xl">Faculty Login</h1>
 
       </div>
 
@@ -103,4 +99,4 @@ function CollegeLogin() {
   )
 }
 
-export default CollegeLogin
+export default FacultyLogin

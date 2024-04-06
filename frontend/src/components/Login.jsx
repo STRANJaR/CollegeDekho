@@ -12,13 +12,12 @@ function Login() {
             to={'/college-login'}
             className='bg-blue-700  text-white hover:bg-blue-800 shadow-md transition-all  text-center p-4 rounded-sm my-3'
             >
-              {/* <FaUniversity /> */}
 
             Login as College
             </Link>
 
             <Link
-            to={'/faculty-register'}
+            to={'/faculty-login'}
             className='bg-blue-700  text-white hover:bg-blue-800 shadow-md transition-all  text-center p-4 rounded-sm my-3'
             >
             Login as Faculty

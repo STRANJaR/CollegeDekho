@@ -14,6 +14,7 @@ import CollegeSignup from './components/College/CollegeSignup.jsx'
 import StudentSignup from './components/Student/StudentSignup.jsx'
 import Login from './components/Login.jsx'
 import CollegeLogin from './components/College/CollegeLogin.jsx'
+import FacultyLogin from './components/Faculty/FacultyLogin.jsx'
 
 
 const router = createBrowserRouter([
@@ -56,7 +57,11 @@ const router = createBrowserRouter([
       {
         path: "/college-login",
         element: <CollegeLogin/>
-      }
+      },
+      {
+        path: "/faculty-login",
+        element: <FacultyLogin/>
+      },
     ]
   }
 ])
