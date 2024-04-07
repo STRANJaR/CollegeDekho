@@ -14,12 +14,7 @@ function CollegeLogin() {
                 username,
                 password
             }
-            axios.post(`http://127.0.0.1:8000/college_login/`, userData, {
-              headers: {
-                "Authorization": "Bearer " + password,
-                "Content-Type": "application/json"
-              }
-            })
+            axios.post(`http://127.0.0.1:8000/college_login/`, userData)
             .then((response)=> console.log(response))
         } catch (error) {
             console.log(error);

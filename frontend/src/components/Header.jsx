@@ -5,12 +5,32 @@ import { CgProfile } from "react-icons/cg";
 
 function Header() {
   return (
-    <section className='bg-dark-100 w-full h-auto'>
-        <div className='bg-dark-100  text-light-100 flex justify-between mx-14'>
-            <div className=''>
+    <section className='bg-light-100 border-b-4 border-fuchsia-900 w-full h-auto'>
+        <div className='bg-dark-100  text-fuchsia-50 font-semibold flex justify-evenly '>
+            <div className='flex'>
                 <Link to={"/"}>Logo</Link>
             </div>
 
+
+            <div className="">
+                <ul className="flex  text-[14px]">
+                    <Link 
+                    to={""}
+                    className='px-5 m-2 py-1 rounded-sm hover:bg-fuchsia-600 transition-all shadow-md'>
+                        About
+                    </Link>
+                    <Link 
+                    to={""}
+                    className='px-5 m-2 py-1 rounded-sm hover:bg-fuchsia-600 transition-all shadow-md'>
+                        Services
+                    </Link>
+                    <Link 
+                    to={""}
+                    className='px-5 m-2 py-1 rounded-sm hover:bg-fuchsia-600 transition-all shadow-md'>
+                        Contact Us
+                    </Link>
+                </ul>
+            </div>
             <div className="text-white">
                 <ul className='flex'>
                     <Link 
