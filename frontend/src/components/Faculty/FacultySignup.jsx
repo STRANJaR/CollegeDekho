@@ -29,12 +29,12 @@ function FacultySignup() {
   return (
     <section className="h-screen w-full bg-bodyPrimary">
 
-    <div className="bg-bodyPrimary h-screen flex justify-around  mx-20">
+    <div className="bg-fuchsia-50 h-screen flex justify-around">
 
       {/* Left side image  */}
-      <div className="w-full bg-teal-600 text-center">
+      <div className="w-full bg-fuchsia-700 text-center">
         {/* <img src={""} width="400"  alt="" /> */}
-        <h1 className="relative top-64 font-semibold text-whiteText text-3xl">Faculty Register</h1>
+        <h1 className="relative top-64 font-semibold text-light-100 text-3xl">Faculty Register</h1>
 
       </div>
 
@@ -54,7 +54,7 @@ function FacultySignup() {
               </label>
 
               <input 
-              className="p-3 outline-none border w-96"
+              className="p-3 outline-none border-2 border-fuchsia-400 w-96"
               placeholder="Enter Your Username..."
               type="text" 
               name="username" 
@@ -70,7 +70,7 @@ function FacultySignup() {
             </label>
 
               <input 
-              className="p-3 outline-none border w-96"
+              className="p-3 outline-none border-2 border-fuchsia-400 w-96"
               placeholder="Enter Your Email..."
               type="email" 
               name="email" 
@@ -88,7 +88,7 @@ function FacultySignup() {
               </label>
 
               <input 
-              className="p-3 outline-none  border w-96"
+              className="p-3 outline-none  border-2 border-fuchsia-400 w-96"
               placeholder="Enter Your Password..."
               type="password" 
               name="password" 
@@ -97,7 +97,7 @@ function FacultySignup() {
               required={true} />
         
             <button 
-            className="bg-primaryColor text-whiteText rounded-sm p-3 w-96 mt-4"
+            className="bg-fuchsia-500 text-light-100 rounded-sm p-3 w-96 mt-4 hover:bg-fuchsia-600"
             type="submit"
             >Register
             </button>
