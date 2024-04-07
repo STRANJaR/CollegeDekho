@@ -24,7 +24,7 @@ function Login() {
             </Link>
             
             <Link
-            to={'/student-register'}
+            to={'/student-login'}
             className='bg-blue-700  text-white hover:bg-blue-800 shadow-md transition-all  text-center p-4 rounded-sm my-3'
             >
             Login as Student

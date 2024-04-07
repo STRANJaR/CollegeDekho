@@ -1,4 +1,4 @@
-from myapp.models import Faculty, Faculty_Profile
+from myapp.models import Faculty, Faculty_Profile, FacultyPasswordResetToken
 from rest_framework import serializers
 
 
@@ -19,6 +19,10 @@ class FacultyProfileSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
     
+class FacultyPasswordResetTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FacultyPasswordResetToken
+        fields = "__all__"
 
         
     

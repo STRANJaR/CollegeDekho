@@ -1,0 +1,6 @@
+All Requirements in college dekho project.
+1. django       (python framework)
+2. mysqlclient  (for connecting mysql database)
+3. rest_framework (for creating api in django)
+4. cloudinary     (for uploading image on cloudinary)
+5. 

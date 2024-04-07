@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from myapp.models import Faculty, Faculty_Profile
-from .serializers import  FacultySerializer,  FacultyProfileSerializer
+from myapp.models import Faculty, Faculty_Profile, FacultyPasswordResetToken
+from .serializers import  FacultySerializer,  FacultyProfileSerializer, FacultyPasswordResetTokenSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,6 +8,9 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from myapp.pagination import CustomPagination
 from django.contrib.auth.hashers import make_password
 from cloudinary.uploader import upload
+from django.core.mail import send_mail
+import secrets
+from myapp.validation import validate_signup_data
 
 
 
@@ -15,14 +18,32 @@ from cloudinary.uploader import upload
 @api_view(['POST'])
 @csrf_exempt
 def faculty_signup(request):
-    request.data._mutable = True   #with thid code queryset converted into mutable form
+    user_email = request.data.get('email')     #fetching user email.
+    # request.data._mutable = True   #with thid code queryset converted into mutable form
     data = request.data    #storing all sended data in data variable
+    data = data.copy()    #make a copy of data in data variable.
     hashed_password = make_password(data.get('password'))  # hashing password
     data['password'] = hashed_password         #updating old password with hashed password
     
     serializer = FacultySerializer(data=request.data)
     if serializer.is_valid():
+        
+        # validating username using own validation function.
+        validate_signup_data(serializer.validated_data, Faculty)
+        
+        #saving serializer data to database
         serializer.save()
+        
+        if serializer.save():
+            # Compose email message
+          subject = 'Welcome to Our Platform!'
+          body = 'Thank you for signing up. We are excited to have you on board!'
+          sender_email = 'yadav.parishram@gmail.com'  # Replace with your sender email address
+          recipient_email = user_email
+
+          # Send email
+          send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
+          
         return Response({"message":"Your signup is done successfull", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -74,7 +95,7 @@ def create_faculty_profile(request):
         
         # message = "Your profile is created successfuly..."
         
-        return Response({"message":"successfull", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({"message":"your account is created successfully", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -138,3 +159,70 @@ def get_faculty_list(request):
     
     except Faculty_Profile.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        
+# forget_password api using api_view decorator with function based view.
+@api_view(['POST'])
+@csrf_exempt
+def forget_password(request):
+    user_email = request.data.get('email')
+    
+    try:
+        user = Faculty.objects.get(email = user_email)
+        print(user.id)
+    except Faculty.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    # generate token using secret module.
+    token = secrets.token_urlsafe(25)
+    
+    try:
+        FacultyPasswordResetToken.objects.create(user=user, token=token)
+    except:
+        return Response({"error":"token is not saved in database."})
+    
+    
+    subject = 'Forget Password Request.'
+    body = f'Please click the following link to reset your password: http://127.0.0.1:8000/reset_password/{token}'
+    sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
+    recipient_email = user_email
+
+    # Send email
+    send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
+    
+    return Response({"message":"reset password mail is send successfully to the given mail."}, status=status.HTTP_201_CREATED)   
+
+
+
+# reset password api using api_view decorator with function based view.
+@api_view(['POST'])
+@csrf_exempt
+def reset_password(request, token):
+    
+    try:
+        new_password = request.data.get('new_password')
+        print(new_password)
+    except:
+        return Response({"error":"Please enter new password..."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        reset_token_object = FacultyPasswordResetToken.objects.get(token=token)
+    except:
+        return Response({"error":"user not exits with this token..."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        if reset_token_object.is_expired():
+            return Response({'error': 'Token expired'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        hashed_new_password = make_password(new_password)
+        user = reset_token_object.user
+        user_data = Faculty.objects.get(id=user.id)
+        
+        user_data.password = hashed_new_password
+        user_data.save()
+        reset_token_object.delete()
+        return Response({"message":"your password is reset successfully..."})
+        
+    except FacultyPasswordResetToken.DoesNotExist:
+        return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)

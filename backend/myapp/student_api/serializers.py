@@ -1,4 +1,4 @@
-from myapp.models import Student
+from myapp.models import Student, StudentPasswordResetToken
 from rest_framework import serializers
 
         
@@ -9,4 +9,9 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = ['id', 'username', 'email', 'password']
         
+        
+class StudentPasswordResetTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentPasswordResetToken
+        fields = "__all__"
         

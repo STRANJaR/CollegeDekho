@@ -1,6 +1,7 @@
 from django.db import models
 from cloudinary.models import CloudinaryField
-
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 # model for college
 class College(models.Model):
@@ -69,3 +70,30 @@ class Subject_Teacher(models.Model):
     qualification = models.TextField(max_length=1000)
     additional_skills = models.TextField(max_length=1000)
     experience_years = models.IntegerField()
+    
+    
+class CollegePasswordResetToken(models.Model):
+    user = models.ForeignKey(College, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(hours=5)
+    
+    
+class FacultyPasswordResetToken(models.Model):
+    user = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(hours=5)
+    
+
+class StudentPasswordResetToken(models.Model):
+    user = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(hours=5)

@@ -1,3 +1,4 @@
 1. sing_up -> successfull message (DONE)
 2. college_profile model fields = ["It", "Non-It", "Both", "affiliated_by", "college_code"]
 3. faculty_profile model fields = ["qualification", "about"]
+4. add .env file in project sesitive data.  (DONE)
