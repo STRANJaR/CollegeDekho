@@ -15,9 +15,6 @@ function Home() {
     <section className=' bg-dark-100 text-light-100 h-screen w-full '>
       <div className=' h-48'>
         {/* <div className=' h-auto w-auto rounded-full shadow-5xl shadow-fuchsia-500'> heo</div> */}
-        <a 
-        className='text-center'
-        href="#">Link</a>
         <div className='relative top-48 flex flex-col text-center mx-20'>
           <h1 className='text-[80px] text-fuchsia-100 pb-8 font-black'>Accelerate Sales Growth with Expert Marketing Strategies</h1>
 

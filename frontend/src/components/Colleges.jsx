@@ -6,7 +6,7 @@ function Colleges() {
     const [colleges, setColleges] = useState([]);
 
     useEffect(()=>{
-        axios.get(`http://127.0.0.1:8000/get_college_list/`)
+        axios.get(`http://127.0.0.1:8000/get_college_list/?page=3`)
         .then((response)=> {
             setColleges(response.data.results)
             console.log(response);
