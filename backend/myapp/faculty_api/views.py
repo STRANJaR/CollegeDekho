@@ -45,7 +45,7 @@ def faculty_signup(request):
           # Send email
           send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
           
-        return Response({"message":"Your signup is done successfull", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({"message":"Your account has been created", "user":serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
@@ -63,7 +63,7 @@ def faculty_login(request):
     
     # if password matched then allow user logged in successfully..
     if match_password:
-        return Response({'message': 'Login successful', 'user': FacultySerializer(user_obj).data}, status=status.HTTP_200_OK)
+        return Response({'message': 'You are successfully logged in', 'user': FacultySerializer(user_obj).data}, status=status.HTTP_200_OK)
     
     # if user's password not matched then through error...
     else:
@@ -104,7 +104,7 @@ def create_faculty_profile(request, user_id):
         
         # message = "Your profile is created successfuly..."
         
-        return Response({"message":"your account is created successfully", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({"message":"Your profile details have been saved.", "profile_data":serializer.data}, status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -124,7 +124,7 @@ def get_faculty_profile(request, pk):
         return Response(serializer.data)
     
     except Faculty_Profile.DoesNotExist:
-        return Response({"message": "faculty with this id is does not exist..."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Profile not found."}, status=status.HTTP_400_BAD_REQUEST)
 
     # else:
     #     return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -147,7 +147,7 @@ def update_faculty_profile(request, pk):
     serializer = FacultyProfileSerializer(profile, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data)
+        return Response({"message":"Your profile has been updated.", "profile_data":serializer.data})
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # else:
@@ -189,10 +189,10 @@ def forget_password(request):
     try:
         FacultyPasswordResetToken.objects.create(user=user, token=token)
     except:
-        return Response({"error":"token is not saved in database."})
+        return Response({"error":"Token not found."})
     
     
-    subject = 'Forget Password Request.'
+    subject = 'f you did not request a new password, please ignore this message.'
     body = f'Please click the following link to reset your password: http://127.0.0.1:8000/reset_password/{token}'
     sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
     recipient_email = user_email
@@ -200,7 +200,7 @@ def forget_password(request):
     # Send email
     send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
     
-    return Response({"message":"reset password mail is send successfully to the given mail."}, status=status.HTTP_201_CREATED)   
+    return Response({"message":"Your reset password email is heading your way."}, status=status.HTTP_201_CREATED)   
 
 
 
@@ -218,7 +218,7 @@ def reset_password(request, token):
     try:
         reset_token_object = FacultyPasswordResetToken.objects.get(token=token)
     except:
-        return Response({"error":"user not exits with this token..."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error":"User not found, Please try again."}, status=status.HTTP_400_BAD_REQUEST)
     
     try:
         if reset_token_object.is_expired():
@@ -231,7 +231,7 @@ def reset_password(request, token):
         user_data.password = hashed_new_password
         user_data.save()
         reset_token_object.delete()
-        return Response({"message":"your password is reset successfully..."})
+        return Response({"message":"Your password has been changed."})
         
     except FacultyPasswordResetToken.DoesNotExist:
         return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
