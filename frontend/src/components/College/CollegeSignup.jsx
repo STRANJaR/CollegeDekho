@@ -2,6 +2,7 @@ import React from 'react'
 import axios from 'axios';
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 
 function CollegeSignup() {
 
@@ -28,13 +29,14 @@ function CollegeSignup() {
         console.log(response);
         <Navigate to={"/college-root"} />
         })
+        .catch((err)=> toast.error(err.response.data[0]))
     } catch (error) {
         console.log("Something went wrong while register college", error);
     }
   }
   return (
     <section className="h-screen w-full">
-
+      <Toaster/>
     <div className="bg-fuchsia-50 h-screen flex justify-around  ">
 
       {/* Left side image  */}

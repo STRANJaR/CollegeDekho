@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 function Login() {
   return (
-    <section className='bg-fuchsia-50 text-light-100 h-screen w-full'>
+    <section className='bg-dark-100 text-light-100 h-screen w-full'>
       <div className=' h-screen'>
           <div className='flex flex-col ml-96 mr-96 relative top-28 '>
 

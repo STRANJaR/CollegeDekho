@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react'
+import toast, { Toaster } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 
 function CollegeLogin() {
@@ -15,15 +16,18 @@ function CollegeLogin() {
                 password
             }
             axios.post(`http://127.0.0.1:8000/college_login/`, userData)
-            .then((response)=> console.log(response))
+            .then((response)=> {
+              console.log(response)
+              toast.success(response.data.message)
+            })
         } catch (error) {
             console.log(error);
         }
     }
   return (
     <section className="h-screen w-full ">
-
-    <div className="bg-fuchsia-50 h-screen flex justify-around">
+      <Toaster/>
+    <div className="bg-dark-100 text-light-100 h-screen flex justify-around">
 
       {/* Left side image  */}
       <div className="w-full bg-fuchsia-700 text-center">
@@ -48,7 +52,7 @@ function CollegeLogin() {
               </label>
 
               <input 
-              className="p-3 outline-none border-2 border-fuchsia-400 w-96"
+              className="p-3 bg-dark-100 outline-none border-2 border-fuchsia-400 w-96"
               placeholder="Enter Your Username..."
               type="text" 
               name="username" 
@@ -66,7 +70,7 @@ function CollegeLogin() {
               </label>
 
               <input 
-              className="p-3 outline-none  border-2 border-fuchsia-400 w-96"
+              className="p-3 bg-dark-100 outline-none  border-2 border-fuchsia-400 w-96"
               placeholder="Enter Your Password..."
               type="password" 
               name="password" 

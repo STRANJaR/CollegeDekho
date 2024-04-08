@@ -1,5 +1,6 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import toast, { Toaster } from 'react-hot-toast';
 import { Link } from 'react-router-dom'
 
 
@@ -21,6 +22,11 @@ function FacultySignup() {
       axios.post(`http://127.0.0.1:8000/faculty_signup/`, userData)
       .then((response)=>{
         console.log(response);
+        toast.success(response.data.message)
+      })
+      .catch((err)=> {
+        toast.error(err.response.data.email[0])
+        
       })
     } catch (error) {
       console.log("Something went wrong while signup faculty", error);
@@ -28,7 +34,7 @@ function FacultySignup() {
   }
   return (
     <section className="h-screen w-full bg-bodyPrimary">
-
+        <Toaster/>
     <div className="bg-fuchsia-50 h-screen flex justify-around">
 
       {/* Left side image  */}

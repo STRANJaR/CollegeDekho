@@ -8,7 +8,7 @@ function Signup() {
     
   return (
     <section className=' h-screen w-full'>
-      <div className='bg-fuchsia-50 h-screen'>
+      <div className='bg-dark-100 h-screen'>
           <div className='flex flex-col ml-96 mr-96 relative top-28 '>
 
             <Link
