@@ -45,7 +45,7 @@ def student_signup(request):
           # Send email
           send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
           
-        return Response({"message":"Your signup is done successfull", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({"message":"Your account has been created", "user":serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     # else:
@@ -66,7 +66,7 @@ def student_login(request):
     
     # if password matched then allow user logged in successfully..
     if match_password:
-        return Response({'message': 'Login successful', 'user': StudentSerializer(user_obj).data}, status=status.HTTP_200_OK)
+        return Response({'message': 'You are successfully logged in', 'user': StudentSerializer(user_obj).data}, status=status.HTTP_200_OK)
     
     # if user's password not matched then through error...
     else:
@@ -96,10 +96,10 @@ def forget_password(request):
     try:
         StudentPasswordResetToken.objects.create(user=user, token=token)
     except:
-        return Response({"error":"token is not saved in database."})
+        return Response({"error":"Token not found."})
     
     
-    subject = 'Forget Password Request.'
+    subject = 'If you did not request a new password, please ignore this message.'
     body = f'Please click the following link to reset your password: http://127.0.0.1:8000/reset_password/{token}'
     sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
     recipient_email = user_email
@@ -107,7 +107,7 @@ def forget_password(request):
     # Send email
     send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
     
-    return Response({"message":"reset password mail is send successfully to the given mail."}, status=status.HTTP_201_CREATED)   
+    return Response({"message":"Your reset password email is heading your way."}, status=status.HTTP_201_CREATED)   
 
 
 
@@ -126,7 +126,7 @@ def reset_password(request, token):
     try:
         reset_token_object = StudentPasswordResetToken.objects.get(token=token)
     except:
-        return Response({"error":"user not exits with this token..."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error":"User not found, Please try again. "}, status=status.HTTP_400_BAD_REQUEST)
     
     try:
         if reset_token_object.is_expired():
@@ -139,7 +139,7 @@ def reset_password(request, token):
         user_data.password = hashed_new_password
         user_data.save()
         reset_token_object.delete()
-        return Response({"message":"your password is reset successfully..."})
+        return Response({"message":"Your password has been changed."})
         
     except StudentPasswordResetToken.DoesNotExist:
         return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
