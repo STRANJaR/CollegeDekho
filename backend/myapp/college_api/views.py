@@ -27,7 +27,7 @@ def college_signup(request):
     data = data.copy()    #make a copy of data in data variable.
     hashed_password = make_password(data.get('password'))  # hashing password
     data['password'] = hashed_password         #updating old password with hashed password
-    serializer = CollegeSerializer(data=data)
+    serializer = CollegeSerializer(data=data)   #serializing data.
     
     if serializer.is_valid():
         
