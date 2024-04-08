@@ -27,6 +27,7 @@ class Student(models.Model):
 
 # model for FACULTY profile.
 class Faculty_Profile(models.Model):
+    faculty = models.OneToOneField(Faculty, on_delete=models.CASCADE,primary_key=True, default='')
     name = models.CharField(max_length=100)
     skills = models.TextField(max_length=1500)
     experience = models.TextField(max_length=1500)
@@ -64,12 +65,6 @@ class College_Profile(models.Model):
     
 
 
-# class Subject_Teacher(models.Model):
-#     college_code = models.ForeignKey(College_Profile, on_delete=models.CASCADE)
-#     subject = models.CharField(max_length=300)
-#     qualification = models.TextField(max_length=1000)
-#     additional_skills = models.TextField(max_length=1000)
-#     experience_years = models.IntegerField()
     
     
 class CollegePasswordResetToken(models.Model):

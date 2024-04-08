@@ -77,9 +77,11 @@ def faculty_login(request):
 # creating api for storing faculty_profile in database.
 @api_view(['POST'])
 @csrf_exempt
-def create_faculty_profile(request):
+def create_faculty_profile(request, user_id):
     # if request.user.is_authenticated:
-    serializer = FacultyProfileSerializer(data=request.data)
+    profile_data = request.data           #storing profile data in profile_data variable.
+    profile_data['faculty'] = user_id       # adding user_id from college model in querydict.
+    serializer = FacultyProfileSerializer(data=profile_data)
     if serializer.is_valid():
         
         item = serializer.save()
