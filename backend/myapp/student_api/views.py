@@ -10,6 +10,7 @@ from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 import secrets
 from myapp.validation import validate_signup_data
+from django.contrib.auth.hashers import check_password
 
 
 
@@ -25,7 +26,7 @@ def student_signup(request):
     hashed_password = make_password(data.get('password'))  # hashing password
     data['password'] = hashed_password         #updating old password with hashed password
     
-    serializer = StudentSerializer(data=request.data)
+    serializer = StudentSerializer(data=data)
     if serializer.is_valid():
         
         # validating username using own validation function.
@@ -45,7 +46,7 @@ def student_signup(request):
           send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
           
         return Response({"message":"Your signup is done successfull", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     # else:
     #     return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -56,22 +57,24 @@ def student_signup(request):
 @api_view(['POST'])
 @csrf_exempt
 def student_login(request):
-    # if request.user.is_authenticated:
-        if not request.user.is_authenticated:
-            username = request.data.get('username')
-            password = request.data.get('password')
-            print(username)
-            print(password)
-            user = Student.objects.get(username=username, password=password)
-            if user:
-                return Response({'message': 'Login successful', 'user': StudentSerializer(user).data}, status=status.HTTP_200_OK)
-            else:
-                return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-        else:
-            return Response("You are already Logged In.")
+    # if not request.user.is_authenticated:
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user_obj = Student.objects.get(username=username)     #fetch user data from database using username
+    password_stored_in_db = user_obj.password             # storing password from user_obj in variable.
+    match_password = check_password(password,password_stored_in_db)     #matching userpassword and db password 
+    
+    # if password matched then allow user logged in successfully..
+    if match_password:
+        return Response({'message': 'Login successful', 'user': StudentSerializer(user_obj).data}, status=status.HTTP_200_OK)
+    
+    # if user's password not matched then through error...
+    else:
+        return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
     
     # else:
-    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    #     return Response("You are already Logged In.")    
+    
 
 
 

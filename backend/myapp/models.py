@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 class College(models.Model):
     username = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    password= models.CharField(max_length=100)
+    password = models.CharField(max_length=100)
     
     
     
@@ -39,7 +39,7 @@ class Faculty_Profile(models.Model):
     
 # creating model for college_profile
 class College_Profile(models.Model):
-    college_id = models.AutoField
+    college = models.OneToOneField(College, on_delete=models.CASCADE, primary_key=True, default="")
     college_name = models.CharField(max_length=100)
     logo = models.ImageField(upload_to='logo_images/', default="Image not found")
     images = models.ImageField(upload_to='college_images/', default="Image not found")
@@ -64,12 +64,12 @@ class College_Profile(models.Model):
     
 
 
-class Subject_Teacher(models.Model):
-    college_id = models.ForeignKey(College_Profile, on_delete=models.CASCADE)
-    subject = models.CharField(max_length=300)
-    qualification = models.TextField(max_length=1000)
-    additional_skills = models.TextField(max_length=1000)
-    experience_years = models.IntegerField()
+# class Subject_Teacher(models.Model):
+#     college_code = models.ForeignKey(College_Profile, on_delete=models.CASCADE)
+#     subject = models.CharField(max_length=300)
+#     qualification = models.TextField(max_length=1000)
+#     additional_skills = models.TextField(max_length=1000)
+#     experience_years = models.IntegerField()
     
     
 class CollegePasswordResetToken(models.Model):

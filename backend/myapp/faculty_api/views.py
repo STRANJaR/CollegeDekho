@@ -11,6 +11,7 @@ from cloudinary.uploader import upload
 from django.core.mail import send_mail
 import secrets
 from myapp.validation import validate_signup_data
+from django.contrib.auth.hashers import check_password
 
 
 
@@ -25,7 +26,7 @@ def faculty_signup(request):
     hashed_password = make_password(data.get('password'))  # hashing password
     data['password'] = hashed_password         #updating old password with hashed password
     
-    serializer = FacultySerializer(data=request.data)
+    serializer = FacultySerializer(data=data)
     if serializer.is_valid():
         
         # validating username using own validation function.
@@ -45,7 +46,7 @@ def faculty_signup(request):
           send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
           
         return Response({"message":"Your signup is done successfull", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 
@@ -53,17 +54,23 @@ def faculty_signup(request):
 @api_view(['POST'])
 @csrf_exempt
 def faculty_login(request):
-    if not request.user.is_authenticated:
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = Faculty.objects.get(username=username, password=password)
-        if user:
-            return Response({'message': 'Login successful', 'user': FacultySerializer(user).data}, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    # if not request.user.is_authenticated:
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user_obj = Faculty.objects.get(username=username)     #fetch user data from database using username
+    password_stored_in_db = user_obj.password             # storing password from user_obj in variable.
+    match_password = check_password(password,password_stored_in_db)     #matching userpassword and db password 
     
+    # if password matched then allow user logged in successfully..
+    if match_password:
+        return Response({'message': 'Login successful', 'user': FacultySerializer(user_obj).data}, status=status.HTTP_200_OK)
+    
+    # if user's password not matched then through error...
     else:
-        return Response("You are already Logged In.")
+        return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    # else:
+    #     return Response("You are already Logged In.")    
     
     
     

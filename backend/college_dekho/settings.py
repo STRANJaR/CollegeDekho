@@ -34,7 +34,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 # CSRF_TRUSTED_ORIGINS = ['']
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -94,7 +94,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('DB_USERNAME'),
-        'PASSWORD': "parishramrai08",
+        'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST':'localhost',
         'PORT':'3306',
     }

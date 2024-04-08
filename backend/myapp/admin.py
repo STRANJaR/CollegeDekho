@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import College, Faculty, Student, Faculty_Profile, College_Profile, Subject_Teacher
+from .models import College, Faculty, Student, Faculty_Profile, College_Profile
 
 
 
@@ -28,13 +28,13 @@ class FacultyProfileModelAdmin(admin.ModelAdmin):
     
     
 # admin for subject_teacher
-@admin.register(Subject_Teacher)
-class SubjectTeacherModelAdmin(admin.ModelAdmin):
-    list_display = ['college_id', 'subject', 'qualification', 'additional_skills', 'experience_years']
+# @admin.register(Subject_Teacher)
+# class SubjectTeacherModelAdmin(admin.ModelAdmin):
+#     list_display = ['college_code', 'subject', 'qualification', 'additional_skills', 'experience_years']
     
    
 # admin for college_profile 
 @admin.register(College_Profile)
 class CollegeProfileModelAdmin(admin.ModelAdmin):
-    list_display = ['college_id', 'college_name', 'logo', 'images', 'description', 'location', 'established_date', 'website', 'student_population', 'faculty_population', 'affiliated_by', 'college_type', 'college_code']
+    list_display = ['college', 'college_name', 'logo', 'images', 'description', 'location', 'established_date', 'website', 'student_population', 'faculty_population', 'affiliated_by', 'college_type', 'college_code']
     
