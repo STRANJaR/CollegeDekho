@@ -78,38 +78,38 @@ def faculty_login(request):
 @api_view(['POST'])
 @csrf_exempt
 def create_faculty_profile(request, user_id):
-    # if request.user.is_authenticated:
-    profile_data = request.data           #storing profile data in profile_data variable.
-    profile_data['faculty'] = user_id       # adding user_id from college model in querydict.
-    serializer = FacultyProfileSerializer(data=profile_data)
-    if serializer.is_valid():
+    if request.user.is_authenticated:
+        profile_data = request.data           #storing profile data in profile_data variable.
+        profile_data['faculty'] = user_id       # adding user_id from college model in querydict.
+        serializer = FacultyProfileSerializer(data=profile_data)
+        if serializer.is_valid():
+            
+            item = serializer.save()
+            
+            # faculty profile picture
+            profile_pic = request.POST.get('avtar', False)
+            
+            try:
+                if profile_pic:
+                    # uploading facuty profile to cloudinary
+                    upload_image = upload(profile_pic)
+                    
+                    # fetching url of college image from cloudinary response
+                    item.avtar = upload_image.get('url')
+                    
+            except Faculty_Profile.DoesNotExist:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            
+            item.save()
+            
+            # message = "Your profile is created successfuly..."
+            
+            return Response({"message":"Your profile details have been saved.", "profile_data":serializer.data}, status=status.HTTP_201_CREATED)
         
-        item = serializer.save()
-        
-        # faculty profile picture
-        profile_pic = request.POST.get('avtar', False)
-        
-        try:
-            if profile_pic:
-                # uploading facuty profile to cloudinary
-                upload_image = upload(profile_pic)
-                
-                # fetching url of college image from cloudinary response
-                item.avtar = upload_image.get('url')
-                
-        except Faculty_Profile.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        
-        item.save()
-        
-        # message = "Your profile is created successfuly..."
-        
-        return Response({"message":"Your profile details have been saved.", "profile_data":serializer.data}, status=status.HTTP_201_CREATED)
-    
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # else:
-    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     
     
 
