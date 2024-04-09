@@ -82,53 +82,53 @@ def college_login(request):
 @api_view(['POST'])
 @csrf_exempt
 def create_college_profile(request, user_id):
-    # if request.user.is_authenticated:
-    profile_data = request.data           #storing profile data in profile_data variable.
-    profile_data['college'] = user_id       # adding user_id from college model in querydict.
-    serializer = CollegeProfileSerializer(data=profile_data)     #serializing profile_data.
-    
-    if serializer.is_valid():
-        item = serializer.save()
+    if request.user.is_authenticated:
+        profile_data = request.data           #storing profile data in profile_data variable.
+        profile_data['college'] = user_id       # adding user_id from college model in querydict.
+        serializer = CollegeProfileSerializer(data=profile_data)     #serializing profile_data.
         
-        # college image
-        image = request.POST.get('images', False)
-        
-        # college logo 
-        logo = request.POST.get('image', False)
-        
-        try:
-            if image:
-                # uploading college image to cloudinary
-                upload_image = upload(image)
-                
-                # fetching url of college image from cloudinary response
-                item.images = upload_image.get('secure_url')
-                
-        except College_Profile.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        
-        try:
-            if logo:
-                # uploading college image to cloudinary
-                upload_logo = upload(logo)
-                
-                # fetching url of college image from cloudinary response and store it in database
-                item.logo = upload_logo.get('secure_url')
-                
-        except College_Profile.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        
-        # saving serializer.data to database
-        item.save()
-        
-        return Response({"message":"Your profile details have been saved.", "profile_data":serializer.data}, status=status.HTTP_201_CREATED)
-        
-        
-        
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            item = serializer.save()
+            
+            # college image
+            image = request.POST.get('images', False)
+            
+            # college logo 
+            logo = request.POST.get('image', False)
+            
+            try:
+                if image:
+                    # uploading college image to cloudinary
+                    upload_image = upload(image)
+                    
+                    # fetching url of college image from cloudinary response
+                    item.images = upload_image.get('secure_url')
+                    
+            except College_Profile.DoesNotExist:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                if logo:
+                    # uploading college image to cloudinary
+                    upload_logo = upload(logo)
+                    
+                    # fetching url of college image from cloudinary response and store it in database
+                    item.logo = upload_logo.get('secure_url')
+                    
+            except College_Profile.DoesNotExist:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            
+            # saving serializer.data to database
+            item.save()
+            
+            return Response({"message":"Your profile details have been saved.", "profile_data":serializer.data}, status=status.HTTP_201_CREATED)
+            
+            
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # else:
-    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     
     
     
