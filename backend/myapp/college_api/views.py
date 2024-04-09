@@ -13,7 +13,8 @@ import secrets
 from myapp.validation import validate_signup_data
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
-
+import jwt
+import os
 
 
 
@@ -65,9 +66,32 @@ def college_login(request):
     password_stored_in_db = user_obj.password             # storing password from user_obj in variable.
     match_password = check_password(password,password_stored_in_db)     #matching userpassword and db password 
     
+    
+    
     # if password matched then allow user logged in successfully..
     if match_password:
-        return Response({'message': 'You are successfully logged in', 'user': CollegeSerializer(user_obj).data}, status=status.HTTP_200_OK)
+        
+        # user data for creating token.
+        payload = {
+            'user_id': user_obj.id,
+            'username': user_obj.username,
+            'email': user_obj.email,
+        }
+        
+        # generate token using payload.
+        token = jwt.encode(payload, os.getenv('SECRET_KEY'), algorithm='HS256')
+        print("encode token", token)
+        
+        print(len(token))
+        
+        print(user_obj)
+        
+        print("before save in db", user_obj.access_token)
+        user_obj.access_token = token
+        user_obj.save()
+        
+        
+        return Response({'message': 'You are successfully logged in', 'user': CollegeSerializer(user_obj).data, "accessToken":token}, status=status.HTTP_200_OK)
     
     # if user's password not matched then through error...
     else:
@@ -82,53 +106,53 @@ def college_login(request):
 @api_view(['POST'])
 @csrf_exempt
 def create_college_profile(request, user_id):
-    if request.user.is_authenticated:
-        profile_data = request.data           #storing profile data in profile_data variable.
-        profile_data['college'] = user_id       # adding user_id from college model in querydict.
-        serializer = CollegeProfileSerializer(data=profile_data)     #serializing profile_data.
+    # if request.user.is_authenticated:
+    profile_data = request.data           #storing profile data in profile_data variable.
+    profile_data['college'] = user_id       # adding user_id from college model in querydict.
+    serializer = CollegeProfileSerializer(data=profile_data)     #serializing profile_data.
+    
+    if serializer.is_valid():
+        item = serializer.save()
         
-        if serializer.is_valid():
-            item = serializer.save()
-            
-            # college image
-            image = request.POST.get('images', False)
-            
-            # college logo 
-            logo = request.POST.get('image', False)
-            
-            try:
-                if image:
-                    # uploading college image to cloudinary
-                    upload_image = upload(image)
-                    
-                    # fetching url of college image from cloudinary response
-                    item.images = upload_image.get('secure_url')
-                    
-            except College_Profile.DoesNotExist:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            
-            try:
-                if logo:
-                    # uploading college image to cloudinary
-                    upload_logo = upload(logo)
-                    
-                    # fetching url of college image from cloudinary response and store it in database
-                    item.logo = upload_logo.get('secure_url')
-                    
-            except College_Profile.DoesNotExist:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            
-            # saving serializer.data to database
-            item.save()
-            
-            return Response({"message":"Your profile details have been saved.", "profile_data":serializer.data}, status=status.HTTP_201_CREATED)
-            
-            
-            
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # college image
+        image = request.POST.get('images', False)
+        
+        # college logo 
+        logo = request.POST.get('image', False)
+        
+        try:
+            if image:
+                # uploading college image to cloudinary
+                upload_image = upload(image)
+                
+                # fetching url of college image from cloudinary response
+                item.images = upload_image.get('secure_url')
+                
+        except College_Profile.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            if logo:
+                # uploading college image to cloudinary
+                upload_logo = upload(logo)
+                
+                # fetching url of college image from cloudinary response and store it in database
+                item.logo = upload_logo.get('secure_url')
+                
+        except College_Profile.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        # saving serializer.data to database
+        item.save()
+        
+        return Response({"message":"Your profile details have been saved.", "profile_data":serializer.data}, status=status.HTTP_201_CREATED)
+        
+        
+        
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    else:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    # else:
+    #     return Response({"message":"user is unauthorized or no found"}, status=status.HTTP_401_UNAUTHORIZED)
     
     
     
@@ -253,3 +277,10 @@ def reset_password(request, token):
         
     except CollegePasswordResetToken.DoesNotExist:
         return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
