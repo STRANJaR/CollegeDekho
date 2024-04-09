@@ -12,6 +12,8 @@ from django.core.mail import send_mail
 import secrets
 from myapp.validation import validate_signup_data
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth import logout
+
 
 
 
@@ -109,6 +111,18 @@ def create_faculty_profile(request):
     # else:
     #     return Response(status=status.HTTP_401_UNAUTHORIZED)
     
+    
+    
+# logour api using api_view decorator
+@api_view(['POST'])
+def student_logout(request):
+    if request.method == 'POST':
+        logout(request)
+        return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
     
 
 # creating api for fetching data from database and show it to faculty_profile 

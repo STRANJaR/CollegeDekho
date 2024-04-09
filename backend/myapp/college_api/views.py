@@ -9,6 +9,7 @@ from myapp.pagination import CustomPagination
 from django.contrib.auth.hashers import make_password
 from cloudinary.uploader import upload
 from django.core.mail import send_mail
+from django.contrib.auth import logout
 import secrets
 from myapp.validation import validate_signup_data
 from django.contrib.auth import authenticate
@@ -171,6 +172,16 @@ def get_college_list(request):
     except College_Profile.DoesNotExist:
         return Response(status=status.HTTP_400_BAD_REQUEST) 
 
+
+
+# logour api using api_view decorator
+@api_view(['POST'])
+def college_logout(request):
+    if request.method == 'POST':
+        logout(request)
+        return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 

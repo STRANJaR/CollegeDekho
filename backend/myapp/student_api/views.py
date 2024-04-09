@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 import secrets
 from myapp.validation import validate_signup_data
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth import logout
 
 
 
@@ -75,6 +76,15 @@ def student_login(request):
     # else:
     #     return Response("You are already Logged In.")    
     
+
+# logour api using api_view decorator
+@api_view(['POST'])
+def student_logout(request):
+    if request.method == 'POST':
+        logout(request)
+        return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 
