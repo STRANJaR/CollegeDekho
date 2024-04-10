@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from myapp.models import College, College_Profile, CollegePasswordResetToken
-from .serializers import CollegeSerializer, CollegeProfileSerializer, CollegePasswordResetTokenSerializer
+from .serializers import CollegeSerializer, CollegeProfileSerializer, CollegePasswordResetTokenSerializer, JobPostSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -184,17 +184,17 @@ def college_logout(request):
 # creating get api for  colleg_profile
 @api_view(['GET'])
 def get_college_profile_data(request, pk):
-    # if request.user.is_authenticated:
-    try:
-        college_profile = College_Profile.objects.get(id=pk)
-        serializer = CollegeProfileSerializer(college_profile)
-        return Response(serializer.data)
-        
-    except College_Profile.DoesNotExist:
-        return Response({"message": "Profile not found."}, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'POST':
+        try:
+            college_profile = College_Profile.objects.get(id=pk)
+            serializer = CollegeProfileSerializer(college_profile)
+            return Response(serializer.data)
+            
+        except College_Profile.DoesNotExist:
+            return Response({"message": "Profile not found."}, status=status.HTTP_400_BAD_REQUEST)
     
-    # else:
-    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
     
     
@@ -203,20 +203,20 @@ def get_college_profile_data(request, pk):
 @api_view(['PATCH'])
 @csrf_exempt
 def update_college_profile(request, pk):
-    # if request.user.is_authenticated:
-    try:
-        profile = College_Profile.objects.get(id=pk)
-    except College_Profile.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-        
-    serializer = CollegeProfileSerializer(profile, data=request.data, partial=True)
-    if serializer.is_valid():
-        serializer.save()
-        return Response({"message":"Your profile has been updated.", "profile_data":serializer.data})
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'POST':
+        try:
+            profile = College_Profile.objects.get(id=pk)
+        except College_Profile.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+            
+        serializer = CollegeProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message":"Your profile has been updated.", "profile_data":serializer.data})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # else:
-    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
 
 
@@ -225,69 +225,87 @@ def update_college_profile(request, pk):
 @api_view(['POST'])
 @csrf_exempt
 def forget_password(request):
-    user_email = request.data.get('email')
-    
-    try:
-        user = College.objects.get(email = user_email)
+    if request.method == 'POST':
+        user_email = request.data.get('email')
+        
+        try:
+            user = College.objects.get(email = user_email)
 
-    except College.DoesNotExist:
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-    
-    # generate token using secret module.
-    token = secrets.token_urlsafe(25)
-    
-    try:
-        CollegePasswordResetToken.objects.create(user=user, token=token)
-    except:
-        return Response({"error":"Token not found."})
-    
-    
-    subject = 'If you did not request a new password, please ignore this message.'
-    body = f'Please click the following link to reset your password: http://127.0.0.1:8000/reset_password/{token}'
-    sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
-    recipient_email = user_email
+        except College.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        # generate token using secret module.
+        token = secrets.token_urlsafe(25)
+        
+        try:
+            CollegePasswordResetToken.objects.create(user=user, token=token)
+        except:
+            return Response({"error":"Token not found."})
+        
+        
+        subject = 'If you did not request a new password, please ignore this message.'
+        body = f'Please click the following link to reset your password: http://127.0.0.1:8000/reset_password/{token}'
+        sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
+        recipient_email = user_email
 
-    # Send email
-    send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
-    
-    return Response({"message":"Your reset password email is heading your way."}, status=status.HTTP_201_CREATED)   
+        # Send email
+        send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
+        
+        return Response({"message":"Your reset password email is heading your way."}, status=status.HTTP_201_CREATED)   
 
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 # reset password api using api_view decorator with function based view.
 @api_view(['POST'])
 @csrf_exempt
 def reset_password(request, token):
-    
-    try:
-        new_password = request.data.get('new_password')
-    except:
-        return Response({"error":"Please enter new password..."}, status=status.HTTP_400_BAD_REQUEST)
-    
-    try:
-        reset_token_object = CollegePasswordResetToken.objects.get(token=token)
-    except:
-        return Response({"error":"User not found, Please try again. "}, status=status.HTTP_400_BAD_REQUEST)
-    
-    try:
-        if reset_token_object.is_expired():
-            return Response({'error': 'Token expired'}, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'POST':
+        try:
+            new_password = request.data.get('new_password')
+        except:
+            return Response({"error":"Please enter new password..."}, status=status.HTTP_400_BAD_REQUEST)
         
-        hashed_new_password = make_password(new_password)    #hashing password
-        user = reset_token_object.user                      #get user from reset_token_object
-        user_data = College.objects.get(id=user.id)         #get user data using user_id 
+        try:
+            reset_token_object = CollegePasswordResetToken.objects.get(token=token)
+        except:
+            return Response({"error":"User not found, Please try again. "}, status=status.HTTP_400_BAD_REQUEST)
         
-        user_data.password = hashed_new_password           #saving hashed password to main password
-        user_data.save()                                   #saving new password to password
-        reset_token_object.delete()                       #deleting reset_token_object from token object..
-        return Response({"message":"Your password has been changed."})
-        
-    except CollegePasswordResetToken.DoesNotExist:
-        return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            if reset_token_object.is_expired():
+                return Response({'error': 'Token expired'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            hashed_new_password = make_password(new_password)    #hashing password
+            user = reset_token_object.user                      #get user from reset_token_object
+            user_data = College.objects.get(id=user.id)         #get user data using user_id 
+            
+            user_data.password = hashed_new_password           #saving hashed password to main password
+            user_data.save()                                   #saving new password to password
+            reset_token_object.delete()                       #deleting reset_token_object from token object..
+            return Response({"message":"Your password has been changed."})
+            
+        except CollegePasswordResetToken.DoesNotExist:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+    
 
+# creating pi for job post by college.
+@api_view(['POST'])
+@csrf_exempt
+def job_post(request):
+    if request.method == 'POST':
+        data = request.data 
+        serializer = JobPostSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'data':serializer.data}, status=status.HTTP_200_OK)
 
-
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 

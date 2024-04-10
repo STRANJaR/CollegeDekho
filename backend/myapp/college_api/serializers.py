@@ -1,4 +1,4 @@
-from myapp.models import College, College_Profile, CollegePasswordResetToken
+from myapp.models import College, College_Profile, CollegePasswordResetToken, JobPost
 from rest_framework import serializers
 
 
@@ -17,11 +17,10 @@ class CollegeProfileSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
     
-# serializer for subject_teacher
-# class SubjectTeacherSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Subject_Teacher
-#         fields = '__all__'
+# serializer for job post by college
+class JobPostSerializer(serializers.ModelSerializer):
+    model = JobPost
+    fields = '__all__'
         
         
 class CollegePasswordResetTokenSerializer(serializers.ModelSerializer):
