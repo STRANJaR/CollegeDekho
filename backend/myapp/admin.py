@@ -30,7 +30,7 @@ class FacultyProfileModelAdmin(admin.ModelAdmin):
 # admin for job post
 @admin.register(JobPost)
 class JobPostModelAdmin(admin.ModelAdmin):
-    list_display = ['college', 'position', 'description', 'vacancy_available', 'skills_required', 'about_work', 'who_can_apply', 'additional_information']
+    list_display = ['college_profile', 'position', 'description', 'vacancy_available', 'skills_required', 'about_work', 'who_can_apply', 'additional_information']
     
     
    

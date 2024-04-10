@@ -99,7 +99,7 @@ class StudentPasswordResetToken(models.Model):
 
 # creating profile for job_post of college.
 class JobPost(models.Model):
-    college = models.ForeignKey(College_Profile, on_delete=models.CASCADE)
+    college_profile = models.ForeignKey(College_Profile, on_delete=models.CASCADE)
     position = models.CharField(max_length=100)
     description = models.TextField(null=True)
     vacancy_available = models.IntegerField(default=1)

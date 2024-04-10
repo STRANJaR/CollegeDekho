@@ -296,9 +296,10 @@ def reset_password(request, token):
 # creating pi for job post by college.
 @api_view(['POST'])
 @csrf_exempt
-def job_post(request):
+def job_post(request, user_id):
     if request.method == 'POST':
         data = request.data 
+        data['college_profile'] = user_id
         serializer = JobPostSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
