@@ -13,7 +13,8 @@ import secrets
 from myapp.validation import validate_signup_data
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import logout
-
+import jwt
+import os
 
 
 
@@ -63,8 +64,24 @@ def faculty_login(request):
     password_stored_in_db = user_obj.password             # storing password from user_obj in variable.
     match_password = check_password(password,password_stored_in_db)     #matching userpassword and db password 
     
+    
     # if password matched then allow user logged in successfully..
     if match_password:
+        # user data for creating token.
+        payload = {
+            'user_id': user_obj.id,
+            'username': user_obj.username,
+            'email': user_obj.email,
+        }
+        
+        # generate token using payload.
+        token = jwt.encode(payload, os.getenv('SECRET_KEY'), algorithm='HS256')
+        
+        # storing token in access_token column
+        user_obj.access_token = token
+        
+        # saving user_onj in database.
+        user_obj.save()
         return Response({'message': 'You are successfully logged in', 'user': FacultySerializer(user_obj).data}, status=status.HTTP_200_OK)
     
     # if user's password not matched then through error...

@@ -12,7 +12,8 @@ import secrets
 from myapp.validation import validate_signup_data
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import logout
-
+import jwt
+import os
 
 
 # creating a signup api for Student using api_view 
@@ -67,6 +68,22 @@ def student_login(request):
     
     # if password matched then allow user logged in successfully..
     if match_password:
+        
+        # user data for creating token.
+        payload = {
+            'user_id': user_obj.id,
+            'username': user_obj.username,
+            'email': user_obj.email,
+        }
+        
+        # generate token using payload.
+        token = jwt.encode(payload, os.getenv('SECRET_KEY'), algorithm='HS256')
+        
+        # storing token in access_token column
+        user_obj.access_token = token
+        
+        # saving user_onj in database.
+        user_obj.save()
         return Response({'message': 'You are successfully logged in', 'user': StudentSerializer(user_obj).data}, status=status.HTTP_200_OK)
     
     # if user's password not matched then through error...

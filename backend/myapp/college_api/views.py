@@ -68,7 +68,6 @@ def college_login(request):
     match_password = check_password(password,password_stored_in_db)     #matching userpassword and db password 
     
     
-    
     # if password matched then allow user logged in successfully..
     if match_password:
         
@@ -81,14 +80,11 @@ def college_login(request):
         
         # generate token using payload.
         token = jwt.encode(payload, os.getenv('SECRET_KEY'), algorithm='HS256')
-        print("encode token", token)
         
-        print(len(token))
-        
-        print(user_obj)
-        
-        print("before save in db", user_obj.access_token)
+        # storing token in access_token column
         user_obj.access_token = token
+        
+        # saving user_onj in database.
         user_obj.save()
         
         
