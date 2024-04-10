@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import College, Faculty, Student, Faculty_Profile, College_Profile
+from .models import College, Faculty, Student, Faculty_Profile, College_Profile, JobPost
 
 
 
@@ -27,10 +27,11 @@ class FacultyProfileModelAdmin(admin.ModelAdmin):
     list_display = ["faculty", 'name', 'skills', 'experience', 'avtar', 'qualification', 'about']
     
     
-# admin for subject_teacher
-# @admin.register(Subject_Teacher)
-# class SubjectTeacherModelAdmin(admin.ModelAdmin):
-#     list_display = ['college_code', 'subject', 'qualification', 'additional_skills', 'experience_years']
+# admin for job post
+@admin.register(JobPost)
+class JobPostModelAdmin(admin.ModelAdmin):
+    list_display = ['college_profile', 'position', 'description', 'vacancy_available', 'skills_required', 'about_work', 'who_can_apply', 'additional_information']
+    
     
    
 # admin for college_profile 
