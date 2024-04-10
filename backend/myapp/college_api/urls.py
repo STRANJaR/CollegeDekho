@@ -4,6 +4,7 @@ from myapp.college_api import views
 
 urlpatterns = [
     path('college_signup/', views.college_signup, name="college_signup"),
+    path('college_logout/', views.college_logout, name="college_logout"),
     path('college_login/', views.college_login, name="college_login"),
     path('create_college_profile/<int:user_id>/', views.create_college_profile, name="create_college_profile"),
     path('get_college_profile/<int:pk>', views.get_college_profile_data, name="get_college_profile"),

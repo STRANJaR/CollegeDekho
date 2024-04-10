@@ -9,11 +9,13 @@ from myapp.pagination import CustomPagination
 from django.contrib.auth.hashers import make_password
 from cloudinary.uploader import upload
 from django.core.mail import send_mail
+from django.contrib.auth import logout
 import secrets
 from myapp.validation import validate_signup_data
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
-
+import jwt
+import os
 
 
 
@@ -27,7 +29,7 @@ def college_signup(request):
     data = data.copy()    #make a copy of data in data variable.
     hashed_password = make_password(data.get('password'))  # hashing password
     data['password'] = hashed_password         #updating old password with hashed password
-    serializer = CollegeSerializer(data=data)
+    serializer = CollegeSerializer(data=data)   #serializing data.
     
     if serializer.is_valid():
         
@@ -48,7 +50,7 @@ def college_signup(request):
           send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
           
     
-        return Response({"message":"Your signup is done successfuly", "serialized data":serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({"message":"Your account has been created", "user":serializer.data}, status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
@@ -65,9 +67,28 @@ def college_login(request):
     password_stored_in_db = user_obj.password             # storing password from user_obj in variable.
     match_password = check_password(password,password_stored_in_db)     #matching userpassword and db password 
     
+    
     # if password matched then allow user logged in successfully..
     if match_password:
-        return Response({'message': 'Login successful', 'user': CollegeSerializer(user_obj).data}, status=status.HTTP_200_OK)
+        
+        # user data for creating token.
+        payload = {
+            'user_id': user_obj.id,
+            'username': user_obj.username,
+            'email': user_obj.email,
+        }
+        
+        # generate token using payload.
+        token = jwt.encode(payload, os.getenv('SECRET_KEY'), algorithm='HS256')
+        
+        # storing token in access_token column
+        user_obj.access_token = token
+        
+        # saving user_onj in database.
+        user_obj.save()
+        
+        
+        return Response({'message': 'You are successfully logged in', 'user': CollegeSerializer(user_obj).data, "accessToken":token}, status=status.HTTP_200_OK)
     
     # if user's password not matched then through error...
     else:
@@ -121,14 +142,14 @@ def create_college_profile(request, user_id):
         # saving serializer.data to database
         item.save()
         
-        return Response({"message":"Your signup is done successfuly", "serialized data":serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({"message":"Your profile details have been saved.", "profile_data":serializer.data}, status=status.HTTP_201_CREATED)
         
         
         
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # else:
-    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    #     return Response({"message":"user is unauthorized or no found"}, status=status.HTTP_401_UNAUTHORIZED)
     
     
     
@@ -149,6 +170,16 @@ def get_college_list(request):
 
 
 
+# logour api using api_view decorator
+@api_view(['POST'])
+def college_logout(request):
+    if request.method == 'POST':
+        logout(request)
+        return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
 
 # creating get api for  colleg_profile
 @api_view(['GET'])
@@ -160,7 +191,7 @@ def get_college_profile_data(request, pk):
         return Response(serializer.data)
         
     except College_Profile.DoesNotExist:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Profile not found."}, status=status.HTTP_400_BAD_REQUEST)
     
     # else:
     #     return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -181,7 +212,7 @@ def update_college_profile(request, pk):
     serializer = CollegeProfileSerializer(profile, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data)
+        return Response({"message":"Your profile has been updated.", "profile_data":serializer.data})
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # else:
@@ -208,10 +239,10 @@ def forget_password(request):
     try:
         CollegePasswordResetToken.objects.create(user=user, token=token)
     except:
-        return Response({"error":"token is not saved in database."})
+        return Response({"error":"Token not found."})
     
     
-    subject = 'Forget Password Request.'
+    subject = 'If you did not request a new password, please ignore this message.'
     body = f'Please click the following link to reset your password: http://127.0.0.1:8000/reset_password/{token}'
     sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
     recipient_email = user_email
@@ -219,7 +250,7 @@ def forget_password(request):
     # Send email
     send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
     
-    return Response({"message":"reset password mail is send successfully to the given mail."}, status=status.HTTP_201_CREATED)   
+    return Response({"message":"Your reset password email is heading your way."}, status=status.HTTP_201_CREATED)   
 
 
 
@@ -230,14 +261,13 @@ def reset_password(request, token):
     
     try:
         new_password = request.data.get('new_password')
-    
     except:
         return Response({"error":"Please enter new password..."}, status=status.HTTP_400_BAD_REQUEST)
     
     try:
         reset_token_object = CollegePasswordResetToken.objects.get(token=token)
     except:
-        return Response({"error":"user not exits with this token..."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error":"User not found, Please try again. "}, status=status.HTTP_400_BAD_REQUEST)
     
     try:
         if reset_token_object.is_expired():
@@ -250,7 +280,14 @@ def reset_password(request, token):
         user_data.password = hashed_new_password           #saving hashed password to main password
         user_data.save()                                   #saving new password to password
         reset_token_object.delete()                       #deleting reset_token_object from token object..
-        return Response({"message":"your password is reset successfully..."})
+        return Response({"message":"Your password has been changed."})
         
     except CollegePasswordResetToken.DoesNotExist:
         return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+

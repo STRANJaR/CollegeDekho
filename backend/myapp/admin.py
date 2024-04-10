@@ -24,7 +24,7 @@ class StudentModelAdmin(admin.ModelAdmin):
 # admin for faculty_profile
 @admin.register(Faculty_Profile)
 class FacultyProfileModelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'skills', 'experience', 'avtar', 'qualification', 'about']
+    list_display = ["faculty", 'name', 'skills', 'experience', 'avtar', 'qualification', 'about']
     
     
 # admin for subject_teacher

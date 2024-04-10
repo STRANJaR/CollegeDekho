@@ -35,13 +35,13 @@ function CreateCollegeProfile() {
                 affiliated_by,
                 college_code
             }
-            axios.post(`http://127.0.0.1:8000/create_college_profile/`, collegeData)
+            axios.post(`http://127.0.0.1:8000/create_college_profile/1/`, collegeData)
             .then((response) => {
                 console.log(response);
                 toast.success(response.data.message)
             })
         } catch (error) {
-            console.log(error);
+            console.log(error.response.data);
             toast.error("Opps ! something went wrong")
         }
     }
