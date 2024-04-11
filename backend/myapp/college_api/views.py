@@ -23,36 +23,37 @@ import os
 @api_view(['POST'])
 @csrf_exempt
 def college_signup(request): 
-    user_email = request.data.get('email')     #fetching user email.
-    # request.data._mutable = True   #with this code queryset converted into mutable form
-    data = request.data    #storing all sended data in data variable
-    data = data.copy()    #make a copy of data in data variable.
-    hashed_password = make_password(data.get('password'))  # hashing password
-    data['password'] = hashed_password         #updating old password with hashed password
-    serializer = CollegeSerializer(data=data)   #serializing data.
-    
-    if serializer.is_valid():
+    if request.method == 'POST':
+        user_email = request.data.get('email')     #fetching user email.
+        # request.data._mutable = True   #with this code queryset converted into mutable form
+        data = request.data    #storing all sended data in data variable
+        data = data.copy()    #make a copy of data in data variable.
+        hashed_password = make_password(data.get('password'))  # hashing password
+        data['password'] = hashed_password         #updating old password with hashed password
+        serializer = CollegeSerializer(data=data)   #serializing data.
         
-        # validating username using own validation function.
-        validate_signup_data(serializer.validated_data, College)
-        
-        #saving serializer data to database
-        serializer.save()
-        
-        if serializer.save():
-            # Compose email message
-          subject = 'Welcome to Our Platform!'
-          body = 'Thank you for signing up. We are excited to have you on board!'
-          sender_email = 'yadav.parishram@gmail.com'  # Replace with your sender email address
-          recipient_email = user_email
+        if serializer.is_valid():
+            
+            # validating username using own validation function.
+            validate_signup_data(serializer.validated_data, College)
+            
+            #saving serializer data to database
+            serializer.save()
+            
+            if serializer.save():
+                # Compose email message
+                subject = 'Welcome to Our Platform!'
+                body = 'Thank you for signing up. We are excited to have you on board!'
+                sender_email = 'yadav.parishram@gmail.com'  # Replace with your sender email address
+                recipient_email = user_email
 
-          # Send email
-          send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
-          
-    
-        return Response({"message":"Your account has been created", "user":serializer.data}, status=status.HTTP_201_CREATED)
-    
-    return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+                # Send email
+                send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
+            
+        
+            return Response({"message":"Your account has been created", "user":serializer.data}, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 
@@ -293,20 +294,23 @@ def reset_password(request, token):
     
     
 
-# creating pi for job post by college.
+# creating api for job post by college.
 @api_view(['POST'])
 @csrf_exempt
-def job_post(request, user_id):
+def job_post_by_college(request, college_id):
     if request.method == 'POST':
         data = request.data 
-        data['college_profile'] = user_id
+        data = data.copy()
+        data['college_profile'] = college_id
         serializer = JobPostSerializer(data=data)
+        
         if serializer.is_valid():
             serializer.save()
             return Response({'data':serializer.data}, status=status.HTTP_200_OK)
 
     else:
         return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 
 

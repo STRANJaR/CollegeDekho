@@ -34,7 +34,7 @@ class Faculty_Profile(models.Model):
     avtar = models.ImageField(upload_to='profile_pictures/', default="profile pic not found")
     qualification = models.TextField(max_length=2000, default="")
     about = models.TextField(max_length=2000, default="")
-    
+    email = models.EmailField(null=False, default="")
     # username = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     
     
@@ -63,6 +63,7 @@ class College_Profile(models.Model):
     ]
     college_type = models.CharField(max_length=50, choices=my_choices, default="")
     college_code = models.CharField(max_length=50, null=False)
+    email = models.EmailField(null=False, default="")
     
     
 
@@ -107,4 +108,14 @@ class JobPost(models.Model):
     about_work = models.TextField(max_length=500)
     who_can_apply = models.TextField(max_length=300)
     additional_information = models.TextField(max_length=200, null=True)
+    
+    
+    
+class JobApplication(models.Model):
+    job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE)
+    faculty_profile = models.ForeignKey(Faculty_Profile, on_delete=models.CASCADE)
+    applicant_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    resume = models.FileField(upload_to='resume/')
+    cover_letter = models.CharField(max_length=200)
     

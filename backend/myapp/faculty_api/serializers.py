@@ -1,4 +1,4 @@
-from myapp.models import Faculty, Faculty_Profile, FacultyPasswordResetToken
+from myapp.models import Faculty, Faculty_Profile, FacultyPasswordResetToken, JobApplication
 from rest_framework import serializers
 
 
@@ -26,3 +26,8 @@ class FacultyPasswordResetTokenSerializer(serializers.ModelSerializer):
 
         
     
+# serializer for job application
+class JobApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JobApplication
+        fields = "__all__"

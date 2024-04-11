@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from myapp.models import Faculty, Faculty_Profile, FacultyPasswordResetToken
-from .serializers import  FacultySerializer,  FacultyProfileSerializer, FacultyPasswordResetTokenSerializer
+from myapp.models import Faculty, Faculty_Profile, FacultyPasswordResetToken, JobApplication, JobPost
+from .serializers import  FacultySerializer,  FacultyProfileSerializer, FacultyPasswordResetTokenSerializer, JobApplicationSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -49,7 +49,7 @@ def faculty_signup(request):
                 # Send email
                 send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
                 
-                return Response({"message":"Your account has been created", "user":serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({"message":"Your account has been created", "user":serializer.data}, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     
@@ -278,6 +278,73 @@ def reset_password(request, token):
             
         except FacultyPasswordResetToken.DoesNotExist:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+    
+
+# creating api for job apply by faculty.
+@api_view(['POST'])
+@csrf_exempt
+def job_apply_by_faculty(request, job_post_id, faculty_profile_id):
+    if request.method == 'POST':
+        data = request.data
+        data['job_post'] = job_post_id
+        data['faculty_profile'] = faculty_profile_id
+        applicant_email = data['email']           # email which faculty give at the time of applying job.
+        applicant_name = data['applicant_name']   # apllicant name, who apply for this job
+        
+        serializer = JobApplicationSerializer(data=data)
+        
+        if serializer.is_valid():
+            item = serializer.save()
+            
+            # resume
+            resume = request.POST.get('resume', False)
+            
+            try:
+                if resume:
+                    
+                    # uploading resume image to cloudinary
+                    upload_resume = upload(resume)
+                    
+                    # fetching url of resume pdf from cloudinary response
+                    item.resume = upload_resume.get('secure_url')
+            
+            except JobApplication.DoesNotExist:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            
+            # saving serializer.data to database
+            item.save()
+            
+            job_post_obj = JobPost.objects.get(pk=job_post_id)
+            college_profile_obj = job_post_obj.college_profile            #getting object of college_prfile
+            college_email = college_profile_obj.email                     #getting email of college from  college_profile 
+            college_name = college_profile_obj.college_name               #getting college name from college_profile
+            college_profile_id = college_profile_obj.college_id           #getting college_profile_id from college_profile.
+            
+            
+            if college_email:
+                subject = f'{applicant_name} apply for a job. Now you can connect with him/her with {applicant_email} email id.'
+                body = f'Please click the following link to to check the candidate profile: http://127.0.0.1:8000/get_faculty_profile/{faculty_profile_id}'
+                sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
+                recipient_email = college_email
+            
+                # Send email to college for insforming them that someone apply for a job into your college.
+                send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
+                print("mail sended successfully.")
+                
+            if applicant_email:
+                subject = f'Your application is send successfully to the college {college_name}'
+                body = f'Please click the following link to to check the College profile: http://127.0.0.1:8000/get_college_profile/{college_profile_id}'
+                sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
+                recipient_email = applicant_email
+
+                # Send email to faculty for insforming them that there mail is sended successfully to the college.
+                send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,) 
+
+            return Response({"message":"Application is send successfully.", "data":serializer.data}, status=status.HTTP_201_CREATED)
 
     else:
         return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

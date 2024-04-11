@@ -12,5 +12,5 @@ urlpatterns = [
     path('get_college_list/', views.get_college_list, name="college_list"),
     path('college_forget_password/', views.forget_password, name="forget_password"),
     path('college_reset_password/<token>/', views.reset_password, name="reset_password"),
-    path('job_post_by_college/<int:user_id>/', views.job_post, name="job_post"),
+    path('job_post_by_college/<int:college_id>/', views.job_post_by_college, name="job_post"),
 ]
