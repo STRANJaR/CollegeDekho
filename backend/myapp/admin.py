@@ -39,3 +39,8 @@ class JobPostModelAdmin(admin.ModelAdmin):
 class CollegeProfileModelAdmin(admin.ModelAdmin):
     list_display = ['college', 'college_name', 'logo', 'images', 'description', 'location', 'established_date', 'website', 'student_population', 'faculty_population', 'affiliated_by', 'college_type', 'college_code']
     
+    
+# admin for job application
+class JobApplicatioModelAdmin(admin.ModelAdmin):
+    list_display = ['job_post', 'faculty_profile', 'applicant_name', 'email', 'resume', 'cover_letter']
+    

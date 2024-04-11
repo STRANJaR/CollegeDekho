@@ -19,14 +19,16 @@ class CollegeProfileSerializer(serializers.ModelSerializer):
     
 # serializer for job post by college
 class JobPostSerializer(serializers.ModelSerializer):
-    model = JobPost
-    fields = '__all__'
-        
+    class Meta:
+        model = JobPost
+        fields = '__all__'
+            
         
 class CollegePasswordResetTokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollegePasswordResetToken
         fields = "__all__"
+    
     
 
         
