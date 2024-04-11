@@ -258,6 +258,7 @@ def forget_password(request):
         return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
+
 # reset password api using api_view decorator with function based view.
 @api_view(['POST'])
 @csrf_exempt

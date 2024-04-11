@@ -137,7 +137,7 @@ def create_faculty_profile(request):
     
 # logour api using api_view decorator
 @api_view(['POST'])
-def student_logout(request):
+def faculty_logout(request):
     
     if request.method == 'POST':
         logout(request)
@@ -288,7 +288,18 @@ def reset_password(request, token):
 @api_view(['POST'])
 @csrf_exempt
 def job_apply_by_faculty(request, job_post_id, faculty_profile_id):
+    
     if request.method == 'POST':
+        
+        # fetching faculy obj who already apply on the job.
+        faculty_already_applied_on_job_post = JobApplication.objects.get(job_post=job_post_id, faculty_profile=faculty_profile_id)
+        print(faculty_already_applied_on_job_post.email)
+        
+        # checking if faculty already apllied on this job then return faculty only is apllied on this job post.
+        if faculty_already_applied_on_job_post:
+            return Response({"message":"Candidate Already Apllied On This Job Post."}, status=status.HTTP_409_CONFLICT)
+        
+        
         data = request.data
         data['job_post'] = job_post_id
         data['faculty_profile'] = faculty_profile_id
@@ -333,7 +344,7 @@ def job_apply_by_faculty(request, job_post_id, faculty_profile_id):
             
                 # Send email to college for insforming them that someone apply for a job into your college.
                 send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
-                print("mail sended successfully.")
+
                 
             if applicant_email:
                 subject = f'Your application is send successfully to the college {college_name}'
