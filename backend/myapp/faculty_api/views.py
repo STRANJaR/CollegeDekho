@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from myapp.models import Faculty, Faculty_Profile, FacultyPasswordResetToken, JobApplication, JobPost
+from myapp.models import Faculty, Faculty_Profile, FacultyPasswordResetToken, JobApplication, JobPost, College_Profile
 from .serializers import  FacultySerializer,  FacultyProfileSerializer, FacultyPasswordResetTokenSerializer, JobApplicationSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -233,7 +233,7 @@ def forget_password(request):
         
         
         subject = 'f you did not request a new password, please ignore this message.'
-        body = f'Please click the following link to reset your password: http://127.0.0.1:8000/reset_password/{token}'
+        body = f'Please click the following link to reset your password: http://127.0.0.1:8000/reset_password/{token}/'
         sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
         recipient_email = user_email
 
@@ -292,10 +292,9 @@ def job_apply_by_faculty(request, job_post_id, faculty_profile_id):
     if request.method == 'POST':
         
         # fetching faculy obj who already apply on the job.
-        faculty_already_applied_on_job_post = JobApplication.objects.get(job_post=job_post_id, faculty_profile=faculty_profile_id)
-        print(faculty_already_applied_on_job_post.email)
-        
-        # checking if faculty already apllied on this job then return faculty only is apllied on this job post.
+        faculty_already_applied_on_job_post = JobApplication.objects.get(job_post=job_post_id, faculty_profile=faculty_profile_id).exists()
+
+        # # checking if faculty already apllied on this job then return faculty only is apllied on this job post.
         if faculty_already_applied_on_job_post:
             return Response({"message":"Candidate Already Apllied On This Job Post."}, status=status.HTTP_409_CONFLICT)
         
@@ -316,7 +315,7 @@ def job_apply_by_faculty(request, job_post_id, faculty_profile_id):
             
             try:
                 if resume:
-                    
+                    print(resume)
                     # uploading resume image to cloudinary
                     upload_resume = upload(resume)
                     
@@ -338,7 +337,7 @@ def job_apply_by_faculty(request, job_post_id, faculty_profile_id):
             
             if college_email:
                 subject = f'{applicant_name} apply for a job. Now you can connect with him/her with {applicant_email} email id.'
-                body = f'Please click the following link to to check the candidate profile: http://127.0.0.1:8000/get_faculty_profile/{faculty_profile_id}'
+                body = f'Please click the following link to to check the candidate profile: http://127.0.0.1:8000/get_faculty_profile/{faculty_profile_id}/'
                 sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
                 recipient_email = college_email
             
@@ -348,7 +347,7 @@ def job_apply_by_faculty(request, job_post_id, faculty_profile_id):
                 
             if applicant_email:
                 subject = f'Your application is send successfully to the college {college_name}'
-                body = f'Please click the following link to to check the College profile: http://127.0.0.1:8000/get_college_profile/{college_profile_id}'
+                body = f'Please click the following link to to check the College profile: http://127.0.0.1:8000/get_college_profile/{college_profile_id}/'
                 sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
                 recipient_email = applicant_email
 
@@ -357,5 +356,44 @@ def job_apply_by_faculty(request, job_post_id, faculty_profile_id):
 
             return Response({"message":"Application is send successfully.", "data":serializer.data}, status=status.HTTP_201_CREATED)
 
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+
+# creating api for fetching all application which are apply by same faculty.
+@api_view(['GET'])
+@csrf_exempt
+def get_colleges_apply_by_faculty(request, faculty_profile_id):
+    
+    if request.method == 'GET':
+        faculty_application_obj = JobApplication.objects.filter(faculty_profile=faculty_profile_id)
+        colleges_name = []
+        colleges_code = []
+        college_profile_link = []
+        
+        # for loop for getting objects from faculty_appplication_obj.
+        for obj in faculty_application_obj:
+            college_id = obj.job_post.college_profile.college.id    #fetching college id
+            clg_name = obj.job_post.college_profile.college_name    #fetching college name
+            clg_code = obj.job_post.college_profile.college_code    #fetching college code
+            colleges_name.append(clg_name)     #appending college name in list
+            colleges_code.append(clg_code)     #apending college code in list
+            college_profile_link.append(f'http://127.0.0.1:8000/get_college_profile/{college_id}/')   #appending cpllege_profile link in list
+        
+        response = {"college_name":colleges_name, "college_code":colleges_code, "college_profile_link":college_profile_link}
+        print(response['college_name'][0])
+        print(response['college_code'][0])
+        # response = {}
+        # for college, code in zip(colleges, codes):
+        #     response = {"college_name":college, "college_code":code}
+            
+        print(response)
+        # print(faculty_application_obj.job_post)
+        # print(faculty_application_obj.job_post.college_profile)
+        # print(faculty_application_obj.job_post.college_profile.college_name)
+        # print(faculty_application_obj.job_post.college_profile.college_code)
+        return Response(response)
+    
     else:
         return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -13,4 +13,5 @@ urlpatterns = [
     path('faculty_forget_password/', views.forget_password, name="forget_password"),
     path('faculty_reset_password/<token>/', views.reset_password, name="reset_password"),
     path('job_apply_by_faculty/<int:job_post_id>/<int:faculty_profile_id>/', views.job_apply_by_faculty, name="job_apply_by_faculty"),
+    path('get_colleges_apply_by_faculty/<int:faculty_profile_id>/', views.get_colleges_apply_by_faculty, name="get_colleges_apply_by_faculty"),
 ]
