@@ -245,7 +245,7 @@ def forget_password(request):
         
         
         subject = 'If you did not request a new password, please ignore this message.'
-        body = f'Please click the following link to reset your password: http://127.0.0.1:8000/reset_password/{token}'
+        body = f'Please click the following link to reset your password: http://127.0.0.1:8000/reset_password/{token}/'
         sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
         recipient_email = user_email
 
@@ -256,6 +256,7 @@ def forget_password(request):
 
     else:
         return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 
 # reset password api using api_view decorator with function based view.

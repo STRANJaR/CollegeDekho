@@ -102,12 +102,12 @@ class StudentPasswordResetToken(models.Model):
 class JobPost(models.Model):
     college_profile = models.ForeignKey(College_Profile, on_delete=models.CASCADE)
     position = models.CharField(max_length=100)
-    description = models.TextField(null=True)
+    description = models.TextField(null=False, default="")
     vacancy_available = models.IntegerField(default=1)
-    skills_required = models.TextField(max_length=500, null=True)
+    skills_required = models.TextField(max_length=500, null=False, default="")
     about_work = models.TextField(max_length=500)
     who_can_apply = models.TextField(max_length=300)
-    additional_information = models.TextField(max_length=200, null=True)
+    additional_information = models.TextField(max_length=200, null=False, default="")
     
     
     
