@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from myapp.models import College, College_Profile, CollegePasswordResetToken
+from myapp.models import College, College_Profile, CollegePasswordResetToken, JobPost, JobApplication
 from .serializers import CollegeSerializer, CollegeProfileSerializer, CollegePasswordResetTokenSerializer, JobPostSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -189,7 +189,7 @@ def get_college_profile_data(request, pk):
         try:
             college_profile = College_Profile.objects.get(id=pk)
             serializer = CollegeProfileSerializer(college_profile)
-            return Response(serializer.data)
+            return Response({"data":serializer.data}, status=status.HTTP_302_FOUND)
             
         except College_Profile.DoesNotExist:
             return Response({"message": "Profile not found."}, status=status.HTTP_400_BAD_REQUEST)
@@ -208,7 +208,7 @@ def update_college_profile(request, pk):
         try:
             profile = College_Profile.objects.get(id=pk)
         except College_Profile.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({"message":"Profile does not found."}, status=status.HTTP_404_NOT_FOUND)
             
         serializer = CollegeProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
@@ -314,4 +314,52 @@ def job_post_by_college(request, college_id):
 
 
 
+# all faculties who apply on same job post.
+@api_view(['POST'])
+@csrf_exempt
+def faculties_apply_on_same_job_post(request, job_post_id):
+    if request.method == 'POST':
+        
+        # getting job application object with job_post_id
+        job_applicaton_obj = JobApplication.objects.filter(job_post=job_post_id)
 
+        
+        applicant_name = []        #List for storing applicant name.
+        applicant_profile_link = []     #List for storing applicant profile link.
+        job_post_link = []        #list for storing job post link.
+        
+        
+        # playing for loop for getting obj from job_application_obj.
+        for obj in job_applicaton_obj:
+            
+            candidate_name = obj.applicant_name        #storing applicant name in candidate variable
+            faculty_profile_obj = obj.faculty_profile   #storing faculty profile object in variable
+            faculty_obj = faculty_profile_obj.faculty    #storing faculty object in vairable
+            faculty_id = faculty_obj.id       #storing faculty id in variable
+
+            
+            applicant_name.append(candidate_name)    #appending candidate name in applicant name list
+            applicant_profile_link.append(f'http://127.0.0.1:8000/get_faculty_profile/{faculty_id}/')      #appending applicant profile link in applicant_profile_list.
+            job_post_link.append(f'http://127.0.0.1:8000/get_job_post/{job_post_id}/')         #appending job post link in job_post_link list.
+        
+        return Response({"applicant_name":applicant_name, "applicant_profile_link":applicant_profile_link, "job_post_link":job_post_link})
+    
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+
+
+@api_view(['GET'])
+@csrf_exempt
+def get_job_post(request,job_post_id):
+    if request.method == 'GET':
+        try:
+            job_post = JobPost.objects.get(id = job_post_id)
+        except JobPost.DoesNotExist:
+            return Response({"message":"Job Post does not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = JobPostSerializer(job_post)
+        return Response({"data":serializer.data}, status=status.HTTP_302_FOUND)
+    
+    else:
+        return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -329,7 +329,7 @@ def job_apply_by_faculty(request, job_post_id, faculty_profile_id):
             item.save()
             
             job_post_obj = JobPost.objects.get(pk=job_post_id)
-            college_profile_obj = job_post_obj.college_profile            #getting object of college_prfile
+            college_profile_obj = job_post_obj.college_profile            # Fetching the JobPost object using the primary key
             college_email = college_profile_obj.email                     #getting email of college from  college_profile 
             college_name = college_profile_obj.college_name               #getting college name from college_profile
             college_profile_id = college_profile_obj.college_id           #getting college_profile_id from college_profile.
@@ -377,6 +377,7 @@ def get_colleges_apply_by_faculty(request, faculty_profile_id):
             college_id = obj.job_post.college_profile.college.id    #fetching college id
             clg_name = obj.job_post.college_profile.college_name    #fetching college name
             clg_code = obj.job_post.college_profile.college_code    #fetching college code
+            
             colleges_name.append(clg_name)     #appending college name in list
             colleges_code.append(clg_code)     #apending college code in list
             college_profile_link.append(f'http://127.0.0.1:8000/get_college_profile/{college_id}/')   #appending cpllege_profile link in list
