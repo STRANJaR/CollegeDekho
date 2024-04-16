@@ -349,6 +349,7 @@ def get_faculties_apply_on_same_job_post(request, job_post_id):
     
 
 
+# get job post by id using api decorator
 @api_view(['GET'])
 @csrf_exempt
 def get_job_post(request,job_post_id):
@@ -363,3 +364,20 @@ def get_job_post(request,job_post_id):
     
     else:
         return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+    
+    
+# get all job post by all colleges using api decorators.
+@api_view(['GET'])
+@csrf_exempt
+def get_job_post_list(request):
+    if request.method == 'GET':
+        try:
+            job_post_list = JobPost.objects.all()
+            pagination_class = CustomPagination()
+            result_page = pagination_class.paginate_queryset(job_post_list, request)
+            serializer = JobPostSerializer(result_page, many=True)
+            return pagination_class.get_paginated_response(serializer.data)
+        except JobPost.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        

@@ -14,5 +14,6 @@ urlpatterns = [
     path('college_reset_password/<token>/', views.reset_password, name="reset_password"),
     path('job_post_by_college/<int:college_id>/', views.job_post_by_college, name="job_post"),
     path('get_faculties_apply_on_same_job_post/<int:job_post_id>/', views.get_faculties_apply_on_same_job_post, name="get_faculties_apply_on_same_job_post"),
-    path('get_job_post/<int:job_post_id>/', views.get_job_post, name="get_job_post"),   
+    path('get_job_post/<int:job_post_id>/', views.get_job_post, name="get_job_post"),  
+    path('get_job_post_list/', views.get_job_post_list, name="get_job_post"),  
 ]
