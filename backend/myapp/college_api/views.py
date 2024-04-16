@@ -315,9 +315,9 @@ def job_post_by_college(request, college_id):
 
 
 # all faculties who apply on same job post.
-@api_view(['POST'])
+@api_view(['GET'])
 @csrf_exempt
-def faculties_apply_on_same_job_post(request, job_post_id):
+def get_faculties_apply_on_same_job_post(request, job_post_id):
     if request.method == 'POST':
         
         # getting job application object with job_post_id
