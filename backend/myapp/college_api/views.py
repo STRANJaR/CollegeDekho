@@ -336,7 +336,6 @@ def get_faculties_apply_on_same_job_post(request, job_post_id):
             faculty_profile_obj = obj.faculty_profile   #storing faculty profile object in variable
             faculty_obj = faculty_profile_obj.faculty    #storing faculty object in vairable
             faculty_id = faculty_obj.id       #storing faculty id in variable
-
             
             applicant_name.append(candidate_name)    #appending candidate name in applicant name list
             applicant_profile_link.append(f'http://127.0.0.1:8000/get_faculty_profile/{faculty_id}/')      #appending applicant profile link in applicant_profile_list.
@@ -370,7 +369,7 @@ def get_job_post(request,job_post_id):
 # get all job post by all colleges using api decorators.
 @api_view(['GET'])
 @csrf_exempt
-def get_job_post_list(request):
+def get_job_posts_list(request):
     if request.method == 'GET':
         try:
             job_post_list = JobPost.objects.all()
@@ -380,4 +379,5 @@ def get_job_post_list(request):
             return pagination_class.get_paginated_response(serializer.data)
         except JobPost.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        
         
