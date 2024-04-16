@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 
 function CreateCollegeProfile() {
@@ -16,7 +16,7 @@ function CreateCollegeProfile() {
     const [college_type, setCollege_type] = useState('');
     const [college_code, setCollege_code] = useState('');
 
-    console.log(affiliated_by, college_code)
+    
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -65,6 +65,7 @@ function CreateCollegeProfile() {
                         <input
                         className='p-3 bg-dark-100 outline-none border-2 border-fuchsia-400 w-96' 
                         type="text" 
+                        placeholder='IIT Madras'
                         name="college_name" 
                         id="college_name" 
                         value={college_name}
