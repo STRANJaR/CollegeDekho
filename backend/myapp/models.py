@@ -108,7 +108,7 @@ class JobPost(models.Model):
     about_work = models.TextField(max_length=500)
     who_can_apply = models.TextField(max_length=300)
     additional_information = models.TextField(max_length=200, null=False, default="")
-    # created_at = 
+    created_at = models.DateField(auto_now=True)
     
     
 class JobApplication(models.Model):
