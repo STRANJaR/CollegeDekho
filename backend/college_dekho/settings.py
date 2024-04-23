@@ -95,7 +95,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('DB_USERNAME'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST':'localhost',
+        'HOST':'127.0.0.1',
         'PORT':'3306',
     }
 }
@@ -165,5 +165,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'rohitrks805@gmail.com'
+
+
+
+
 
 

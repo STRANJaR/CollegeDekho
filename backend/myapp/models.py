@@ -9,6 +9,10 @@ class College(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
     access_token = models.CharField(max_length=200, null=False, default="")
+    is_active = models.BooleanField(default=True)
+    failed_login_attempts = models.PositiveIntegerField(default=0)
+    locked_until = models.DateTimeField(null=True, blank=True)
+    
     
     
 # model for faculty
@@ -16,7 +20,10 @@ class Faculty(models.Model):
     username = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     password= models.CharField(max_length=100)
-    
+    access_token = models.CharField(max_length=200, null=False, default="")
+    is_active = models.BooleanField(default=True)
+    failed_login_attempts = models.PositiveIntegerField(default=0)
+    locked_until = models.DateTimeField(null=True, blank=True)
 
 # model for student    
 class Student(models.Model):
@@ -108,7 +115,7 @@ class JobPost(models.Model):
     about_work = models.TextField(max_length=500)
     who_can_apply = models.TextField(max_length=300)
     additional_information = models.TextField(max_length=200, null=False, default="")
-    # created_at = 
+    created_at = models.DateField(auto_now=True)
     
     
 class JobApplication(models.Model):
