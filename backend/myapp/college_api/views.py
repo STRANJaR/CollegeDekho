@@ -1,22 +1,21 @@
-from django.shortcuts import render, redirect
 from myapp.models import College, College_Profile, CollegePasswordResetToken, JobPost, JobApplication
 from .serializers import CollegeSerializer, CollegeProfileSerializer, CollegePasswordResetTokenSerializer, JobPostSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
 from myapp.pagination import CustomPagination
 from django.contrib.auth.hashers import make_password
 from cloudinary.uploader import upload
 from django.core.mail import send_mail
 from django.contrib.auth import logout
-import secrets
 from myapp.validation import validate_signup_data
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import check_password
+from myapp.signals import user_login_failed
+import secrets
 import jwt
 import os
-
 
 
 # Creating signup api for college using api_view decorator
@@ -57,6 +56,7 @@ def college_signup(request):
 
 
 
+
 # Creating login api for college using api_view decorator
 @api_view(['POST'])
 @csrf_exempt
@@ -64,7 +64,14 @@ def college_login(request):
     # if not request.user.is_authenticated:
     username = request.data.get('username')
     password = request.data.get('password')
-    user_obj = College.objects.get(username=username)     #fetch user data from database using username
+    
+    try:
+        user_obj = College.objects.get(username=username)     #fetch user data from database using username
+    except College.DoesNotExist:
+        # Emit the user_login_failed signal when user does not exist
+        user_login_failed.send(sender=College, credentials=user_obj, request=request)        
+        return Response({"message":"User Does Not Exist."}, status=status.HTTP_400_BAD_REQUEST)
+        
     password_stored_in_db = user_obj.password             # storing password from user_obj in variable.
     match_password = check_password(password,password_stored_in_db)     #matching userpassword and db password 
     
@@ -91,12 +98,13 @@ def college_login(request):
         
         return Response({'message': 'You are successfully logged in', 'user': CollegeSerializer(user_obj).data, "accessToken":token}, status=status.HTTP_200_OK)
     
-    # if user's password not matched then through error...
+    # if user's password not matched then throw this error...
     else:
-        return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        # Emit the user_login_failed signal when password does not match
+        user_login_failed.send(sender=College, credentials=user_obj, request=request)
+        return Response({'message': 'Invalid Password'}, status=status.HTTP_401_UNAUTHORIZED)
     
-    # else:
-    #     return Response("You are already Logged In.")
+    
     
 
 

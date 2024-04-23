@@ -13,6 +13,7 @@ import secrets
 from myapp.validation import validate_signup_data
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import logout
+from myapp.signals import user_login_failed
 import jwt
 import os
 
@@ -65,7 +66,13 @@ def faculty_login(request):
     if request.method == 'POST':
         username = request.data.get('username')
         password = request.data.get('password')
-        user_obj = Faculty.objects.get(username=username)     #fetch user data from database using username
+        
+        try:
+            user_obj = Faculty.objects.get(username=username)     #fetch user data from database using username
+        except Faculty.DoesNotExist:
+            user_login_failed.send(sender=Faculty, credentials=user_obj, request=request)        
+            return Response({"message":"User Does Not Exist."}, status=status.HTTP_400_BAD_REQUEST)
+        
         password_stored_in_db = user_obj.password             # storing password from user_obj in variable.
         match_password = check_password(password,password_stored_in_db)     #matching userpassword and db password 
         
@@ -91,7 +98,8 @@ def faculty_login(request):
         
         # if user's password not matched then through error...
         else:
-            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            user_login_failed.send(sender=Faculty, credentials=user_obj, request=request)                    
+            return Response({'message': 'Invalid Password'}, status=status.HTTP_401_UNAUTHORIZED)
     
     else:
         return Response({'error': 'Method not allowed.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)    
