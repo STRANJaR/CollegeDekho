@@ -11,15 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='college_profile',
-            name='id',
-        ),
-        migrations.AddField(
-            model_name='college_profile',
-            name='college',
-            field=models.OneToOneField(default='', on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='myapp.college'),
-        ),
         migrations.DeleteModel(
             name='Subject_Teacher',
         ),

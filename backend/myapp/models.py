@@ -8,7 +8,7 @@ class College(models.Model):
     username = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
-    access_token = models.CharField(max_length=200, null=False, default="")
+    
     
     
 # model for faculty
@@ -16,7 +16,10 @@ class Faculty(models.Model):
     username = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     password= models.CharField(max_length=100)
-    
+    access_token = models.CharField(max_length=200, null=False, default="")
+    is_active = models.BooleanField(default=True)
+    failed_login_attempts = models.PositiveIntegerField(default=0)
+    locked_until = models.DateTimeField(null=True, blank=True)
 
 # model for student    
 class Student(models.Model):
@@ -96,26 +99,3 @@ class StudentPasswordResetToken(models.Model):
     
     def is_expired(self):
         return timezone.now() > self.created_at + timedelta(hours=5)
-
-
-# creating profile for job_post of college.
-class JobPost(models.Model):
-    college_profile = models.ForeignKey(College_Profile, on_delete=models.CASCADE)
-    position = models.CharField(max_length=100)
-    description = models.TextField(null=False, default="")
-    vacancy_available = models.IntegerField(default=1)
-    skills_required = models.TextField(max_length=500, null=False, default="")
-    about_work = models.TextField(max_length=500)
-    who_can_apply = models.TextField(max_length=300)
-    additional_information = models.TextField(max_length=200, null=False, default="")
-    # created_at = 
-    
-    
-class JobApplication(models.Model):
-    job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE)
-    faculty_profile = models.ForeignKey(Faculty_Profile, on_delete=models.CASCADE)
-    applicant_name = models.CharField(max_length=100)
-    email = models.EmailField()
-    resume = models.FileField(upload_to='resume/')
-    cover_letter = models.CharField(max_length=200)
-    
