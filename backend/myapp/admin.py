@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import College, Faculty, Student, Faculty_Profile, College_Profile
+from .models import College, Faculty, Student, Faculty_Profile, College_Profile, JobPost
 
 
 
@@ -24,17 +24,23 @@ class StudentModelAdmin(admin.ModelAdmin):
 # admin for faculty_profile
 @admin.register(Faculty_Profile)
 class FacultyProfileModelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'skills', 'experience', 'avtar', 'qualification', 'about']
+    list_display = ["faculty", 'name', 'skills', 'experience', 'avtar', 'qualification', 'about']
     
     
-# admin for subject_teacher
-# @admin.register(Subject_Teacher)
-# class SubjectTeacherModelAdmin(admin.ModelAdmin):
-#     list_display = ['college_code', 'subject', 'qualification', 'additional_skills', 'experience_years']
+# admin for job post
+@admin.register(JobPost)
+class JobPostModelAdmin(admin.ModelAdmin):
+    list_display = ['college_profile', 'position', 'description', 'vacancy_available', 'skills_required', 'about_work', 'who_can_apply', 'additional_information']
+    
     
    
 # admin for college_profile 
 @admin.register(College_Profile)
 class CollegeProfileModelAdmin(admin.ModelAdmin):
     list_display = ['college', 'college_name', 'logo', 'images', 'description', 'location', 'established_date', 'website', 'student_population', 'faculty_population', 'affiliated_by', 'college_type', 'college_code']
+    
+    
+# admin for job application
+class JobApplicatioModelAdmin(admin.ModelAdmin):
+    list_display = ['job_post', 'faculty_profile', 'applicant_name', 'email', 'resume', 'cover_letter']
     
