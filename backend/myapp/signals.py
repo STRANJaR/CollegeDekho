@@ -19,7 +19,7 @@ user_blocked = Signal()
 BLOCK_DURATION = timedelta(minutes=2)
 MAX_LOGIN_ATTEMPTS = 3
 login_attempts = {}
-attempts = 0
+
 
 # user login failed signal.
 @receiver(user_login_failed)
